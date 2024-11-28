@@ -16,10 +16,17 @@ function drawPlayer(player) {
 
 // Déplacement des joueurs
 function movePlayers() {
-    if (keys['w'] && player1.y > 0) player1.y -= 5;
-    if (keys['s'] && player1.y < canvas.height - player1.height) player1.y += 5;
-    if (keys['ArrowUp'] && player2.y > 0) player2.y -= 5;
-    if (keys['ArrowDown'] && player2.y < canvas.height - player2.height) player2.y += 5;
+    // Joueur 1
+    if (keys['w'] && player1.y > 0) player1.y -= 5; 
+    if (keys['s'] && player1.y < canvas.height - player1.height) player1.y += 5; 
+    if (keys['a'] && player1.x > 0) player1.x -= 5; 
+    if (keys['d'] && player1.x < canvas.width - player1.width) player1.x += 5; 
+
+    // Joueur 2
+    if (keys['ArrowUp'] && player2.y > 0) player2.y -= 5; 
+    if (keys['ArrowDown'] && player2.y < canvas.height - player2.height) player2.y += 5; 
+    if (keys['ArrowLeft'] && player2.x > 0) player2.x -= 5; 
+    if (keys['ArrowRight'] && player2.x < canvas.width - player2.width) player2.x += 5; 
 }
 
 // Gestion des tirs
