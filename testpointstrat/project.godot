@@ -10,7 +10,6 @@ config_version=5
 
 [application]
 
-config/name="TestPointStrat"
-run/main_scene="res://game_scene/game_level/level-00.tscn"
+config/name="testpointstrat"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
