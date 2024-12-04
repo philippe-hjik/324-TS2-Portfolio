@@ -1,18 +1,13 @@
-export function updateScoreboard(scores) {
-    document.getElementById('team1-score').textContent = `Team 1: ${scores.team1}`;
-    document.getElementById('team2-score').textContent = `Team 2: ${scores.team2}`;
+// Mise à jour des scores
+export function updateScoreDisplay(player1Score, player2Score) {
+    document.getElementById('team1-score').textContent = `Team 1: ${player1Score}`;
+    document.getElementById('team2-score').textContent = `Team 2: ${player2Score}`;
 }
 
-export function highlightPoint(point) {
-    const map = document.getElementById('map');
-    map.innerHTML = ''; // Clear previous point
-    const pointElement = document.createElement('div');
-    pointElement.style.position = 'absolute';
-    pointElement.style.width = '20px';
-    pointElement.style.height = '20px';
-    pointElement.style.backgroundColor = 'red';
-    pointElement.style.borderRadius = '50%';
-    pointElement.style.left = `${point.x}px`;
-    pointElement.style.top = `${point.y}px`;
-    map.appendChild(pointElement);
+// Mise à jour du timer
+export function updateTimerDisplay(timeRemaining) {
+    let minutes = Math.floor(timeRemaining / 60);
+    let seconds = timeRemaining % 60;
+    if (seconds < 10) seconds = '0' + seconds;
+    document.getElementById('timerDisplay').textContent = `${minutes}:${seconds}`;
 }

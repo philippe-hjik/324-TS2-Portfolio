@@ -25,9 +25,13 @@ body {
     font-size: 20px;
 }
 
+canvas {
+    background-color: #333;
+    border: 2px solid #fff;
+}
+
 .player {
     border: 1px solid black;
     border-radius: 4px;
     transition: left 0.1s, top 0.1s; /* Animation fluide des mouvements */
 }
-

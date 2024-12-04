@@ -1,119 +1,113 @@
-// Variables du jeu
+// game.js
+
+import { checkCollision, checkObstacleCollisions } from './utils.js';
+import { updateScoreDisplay, updateTimerDisplay } from './ui.js';
+
+export const canvas = document.getElementById('gameCanvas');
+export const ctx = canvas.getContext('2d');
+
+// Initialisation des joueurs
 export let player1 = { x: 50, y: 250, width: 20, height: 20, color: 'green', score: 0 };
-export let player2 = { x: 430, y: 250, width: 20, height: 20, color: 'brown', score: 0 };
-export let bullets = []; // Tableau des balles
-const bulletSpeed = 5;
-const keys = {}; // Pour suivre les touches enfoncées
-const bulletSize = 5;
+export let player2 = { x: 730, y: 250, width: 20, height: 20, color: 'brown', score: 0 };
 
-// Création et mise à jour des éléments joueurs dans le DOM
-function ensurePlayerElement(player, className) {
-    let playerElement = document.querySelector(`.${className}`);
-    if (!playerElement) {
-        playerElement = document.createElement('div');
-        playerElement.className = className;
-        playerElement.style.position = 'absolute';
-        playerElement.style.width = `${player.width}px`;
-        playerElement.style.height = `${player.height}px`;
-        playerElement.style.backgroundColor = player.color;
-        map.appendChild(playerElement);
-    }
-    return playerElement;
-}
+// Liste des balles et obstacles
+export let bullets = [];
+export const obstacles = [
+    { x: 200, y: 150, width: 50, height: 50 },
+    { x: 400, y: 300, width: 50, height: 50 },
+    { x: 600, y: 100, width: 50, height: 50 }
+];
+export const bulletSpeed = 5;
+export let timeRemaining = 90;
+export let gameOver = false; // Déclarez gameOver ici
 
-// Met à jour la position du joueur dans le DOM
-export function drawPlayer(player, className) {
-    const playerElement = ensurePlayerElement(player, className);
-    playerElement.style.left = `${player.x}px`;
-    playerElement.style.top = `${player.y}px`;
-}
+// Déclaration de l'objet keys
+export const keys = {};
 
-// Gère le tir d'une balle
-function shootBullet(player, direction) {
-    const bullet = {
-        x: player.x + player.width / 2 - bulletSize / 2,
-        y: player.y + player.height / 2 - bulletSize / 2,
-        direction: direction
-    };
-    bullets.push(bullet);
-}
-
-// Déplace les balles
-function moveBullets() {
+// Fonction de mouvement des balles
+export function moveBullets() {
     bullets.forEach(bullet => {
-        if (bullet.direction === 'right') {
-            bullet.x += bulletSpeed;
-        } else if (bullet.direction === 'left') {
-            bullet.x -= bulletSpeed;
-        }
+        bullet.x += bullet.direction === 'right' ? bulletSpeed : -bulletSpeed;
     });
-
-    // Retirer les balles hors de l'écran
-    bullets = bullets.filter(bullet => bullet.x >= 0 && bullet.x <= map.offsetWidth);
+    bullets = bullets.filter(bullet => bullet.x > 0 && bullet.x < canvas.width); // Retire les balles hors de l'écran
 }
 
-// Gère le mouvement des joueurs
-function movePlayers() {
-    if (keys['w'] && player1.y > 0) player1.y -= 5; // Déplacement vers le haut
-    if (keys['s'] && player1.y < map.offsetHeight - player1.height) player1.y += 5; // Déplacement vers le bas
-    if (keys['a'] && player1.x > 0) player1.x -= 5; // Déplacement vers la gauche
-    if (keys['d'] && player1.x < map.offsetWidth - player1.width) player1.x += 5; // Déplacement vers la droite
+// Dessin des joueurs
+export function drawPlayer(player) {
+    ctx.fillStyle = player.color;
+    ctx.fillRect(player.x, player.y, player.width, player.height);
 
-    if (keys['ArrowUp'] && player2.y > 0) player2.y -= 5; // Déplacement vers le haut
-    if (keys['ArrowDown'] && player2.y < map.offsetHeight - player2.height) player2.y += 5; // Déplacement vers le bas
-    if (keys['ArrowLeft'] && player2.x > 0) player2.x -= 5; // Déplacement vers la gauche
-    if (keys['ArrowRight'] && player2.x < map.offsetWidth - player2.width) player2.x += 5; // Déplacement vers la droite
+    ctx.strokeStyle = 'black';
+    ctx.strokeRect(player.x, player.y, player.width, player.height);
 }
 
-// Met à jour les scores
-function updateScoreDisplay() {
-    document.getElementById('team1-score').textContent = `Team 1: ${player1.score}`;
-    document.getElementById('team2-score').textContent = `Team 2: ${player2.score}`;
+// Dessin des obstacles
+export function drawObstacles() {
+    ctx.fillStyle = 'gray';
+    obstacles.forEach(obstacle => {
+        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        ctx.strokeStyle = 'black';
+        ctx.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+    });
 }
 
-// Boucle principale du jeu
+// Gestion des mouvements des joueurs
+export function movePlayers() {
+    if (keys['w'] && player1.y > 0 && !checkObstacleCollisions(player1, obstacles, player1.x, player1.y - 5)) {
+        player1.y -= 5;
+    }
+    if (keys['s'] && player1.y < canvas.height - player1.height && !checkObstacleCollisions(player1, obstacles, player1.x, player1.y + 5)) {
+        player1.y += 5;
+    }
+    if (keys['a'] && player1.x > 0 && !checkObstacleCollisions(player1, obstacles, player1.x - 5, player1.y)) {
+        player1.x -= 5;
+    }
+    if (keys['d'] && player1.x < canvas.width - player1.width && !checkObstacleCollisions(player1, obstacles, player1.x + 5, player1.y)) {
+        player1.x += 5;
+    }
+
+    if (keys['ArrowUp'] && player2.y > 0 && !checkObstacleCollisions(player2, obstacles, player2.x, player2.y - 5)) {
+        player2.y -= 5;
+    }
+    if (keys['ArrowDown'] && player2.y < canvas.height - player2.height && !checkObstacleCollisions(player2, obstacles, player2.x, player2.y + 5)) {
+        player2.y += 5;
+    }
+    if (keys['ArrowLeft'] && player2.x > 0 && !checkObstacleCollisions(player2, obstacles, player2.x - 5, player2.y)) {
+        player2.x -= 5;
+    }
+    if (keys['ArrowRight'] && player2.x < canvas.width - player2.width && !checkObstacleCollisions(player2, obstacles, player2.x + 5, player2.y)) {
+        player2.x += 5;
+    }
+}
+
+// Fonction de tir
+export function shootBullet(player, direction) {
+    bullets.push({
+        x: player.x + player.width / 2,
+        y: player.y + player.height / 2,
+        direction
+    });
+}
+
+// Boucle de jeu
 export function gameLoop() {
+    if (gameOver) {
+        ctx.fillStyle = 'black';
+        ctx.font = '30px Arial';
+        ctx.fillText('Game Over!', canvas.width / 2 - 90, canvas.height / 2);
+        return;
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawObstacles();
+    drawPlayer(player1);
+    drawPlayer(player2);
+
     movePlayers();
     moveBullets();
-    drawPlayer(player1, 'player1');
-    drawPlayer(player2, 'player2');
-    checkBulletCollisions();
+
+    updateTimerDisplay(timeRemaining);
+    updateScoreDisplay(player1.score, player2.score);
+
     requestAnimationFrame(gameLoop);
-}
-
-// Vérification des collisions des balles avec les joueurs
-function checkBulletCollisions() {
-    bullets = bullets.filter(bullet => {
-        // Collision avec player1
-        if (bullet.direction === 'left' && bullet.x < player1.x + player1.width && bullet.y > player1.y && bullet.y < player1.y + player1.height) {
-            player2.score++; // Augmente le score de player2
-            updateScoreDisplay();
-            return false; // Retirer la balle
-        }
-
-        // Collision avec player2
-        if (bullet.direction === 'right' && bullet.x > player2.x && bullet.y > player2.y && bullet.y < player2.y + player2.height) {
-            player1.score++; // Augmente le score de player1
-            updateScoreDisplay();
-            return false; // Retirer la balle
-        }
-
-        return true; // Garde la balle si aucune collision
-    });
-}
-
-// Gestion des événements clavier
-document.addEventListener('keydown', e => {
-    keys[e.key] = true;
-    if (e.key === ' ') shootBullet(player1, 'right'); // Player 1 tire avec la barre d'espace
-    if (e.key === 'Enter') shootBullet(player2, 'left'); // Player 2 tire avec Enter
-});
-
-document.addEventListener('keyup', e => {
-    keys[e.key] = false;
-});
-
-// Fonction d'initialisation
-export function startGame() {
-    gameLoop(); // Démarre la boucle de jeu
 }
