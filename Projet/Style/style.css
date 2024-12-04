@@ -12,7 +12,7 @@ body {
 
 #map {
     position: relative;
-    width: 600px;
+    width: 800px;
     height: 400px;
     background-color: #333;
     margin: 20px auto;

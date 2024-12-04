@@ -5,16 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Point Stratégique</title>
     <link rel="stylesheet" href="../Style/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #121212;
+            color: #fff;
+        }
+
+        #game-container {
+            margin: 20px auto;
+            width: 80%;
+        }
+
+        #map {
+            position: relative;
+            width: 800px;
+            height: 400px;
+            background-color: #333;
+            margin: 20px auto;
+            border: 2px solid #fff;
+        }
+
+        #scoreboard {
+            display: flex;
+            justify-content: space-around;
+            font-size: 20px;
+        }
+
+        canvas {
+            background-color: #333;
+            border: 2px solid #fff;
+        }
+
+        .player {
+            border: 1px solid black;
+            border-radius: 4px;
+            transition: left 0.1s, top 0.1s; /* Animation fluide des mouvements */
+        }
+    </style>
 </head>
 <body>
     <div id="game-container">
         <h1>Point Stratégique</h1>
-        <div id="map"></div>
+        <div id="canvas-container">
+            <canvas id="gameCanvas" width="800" height="400"></canvas>
+        </div>
         <div id="scoreboard">
             <p id="team1-score">Team 1: 0</p>
             <p id="team2-score">Team 2: 0</p>
         </div>
     </div>
+
     <script type="module" src="../scripts/PointStrat/utils.js"></script>
     <script type="module" src="../scripts/PointStrat/ui.js"></script>
     <script type="module" src="../scripts/PointStrat/game.js"></script>
