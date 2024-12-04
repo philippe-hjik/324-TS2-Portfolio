@@ -1,32 +1,48 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeu 1v1</title>
+    <title>Point Stratégique</title>
+    <link rel="stylesheet" href="../Style/style.css">
     <style>
-        canvas {
-            background: lightgrey;
-            display: block;
-            margin: auto;
+        #map {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            margin: 0 auto;
+            background-color: #f4f4f4;
+            border: 1px solid black;
         }
-        h1 {
-            text-align: center;
-            font-family: Arial, sans-serif;
+        .player, .obstacle, .bullet {
+            position: absolute;
         }
-        #scoreDisplay {
-            font-size: 20px;
-            margin-top: 10px;
-            text-align: center;
+        .player {
+            border: 1px solid black;
+        }
+        .obstacle {
+            background-color: gray;
+            border: 1px solid black;
+        }
+        .bullet {
+            width: 5px;
+            height: 5px;
+            background-color: yellow;
         }
     </style>
 </head>
 <body>
-    <h1>Jeu 1v1 - Temps restant : <span id="timerDisplay">1:30</span></h1>
-    <div id="scoreDisplay">
-        <p>Score Joueur Vert: <span id="scorePlayer1">0</span> | Score Joueur Rouge: <span id="scorePlayer2">0</span></p>
+    <div id="game-container">
+        <h1>Point Stratégique</h1>
+        <div id="map"></div>
+        <div id="scoreboard">
+            <p id="team1-score">Team 1: 0</p>
+            <p id="team2-score">Team 2: 0</p>
+        </div>
     </div>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <script src="../scripts/index.js"></script>
+    <script type="module" src="../scripts/PointStrat/utils.js"></script>
+    <script type="module" src="../scripts/PointStrat/ui.js"></script>
+    <script type="module" src="../scripts/PointStrat/game.js"></script>
+    <script type="module" src="../scripts/PointStrat/main.js"></script>
 </body>
 </html>
