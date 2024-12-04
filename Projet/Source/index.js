@@ -7,23 +7,21 @@ let player2 = { x: 730, y: 250, width: 20, height: 20, color: 'brown', score: 0 
 let bullets = [];
 const bulletSpeed = 5;
 const keys = {};
- 
 const obstacles = [
     { x: 200, y: 150, width: 50, height: 50 },
     { x: 400, y: 300, width: 50, height: 50 },
     { x: 600, y: 100, width: 50, height: 50 }
 ];
-           
+ 
 // Timer
 let timeRemaining = 90;
-let gameOver = false;  
+let gameOver = false;
  
 // Dessin des joueurs
 function drawPlayer(player) {
     ctx.fillStyle = player.color;
     ctx.fillRect(player.x, player.y, player.width, player.height);
  
-    // Dessin d'un contour pour donner un effet 3D
     ctx.strokeStyle = 'black';
     ctx.strokeRect(player.x, player.y, player.width, player.height);
 }
@@ -39,7 +37,7 @@ function drawObstacles() {
     });
 }
  
-// Fonction pour afficher le temps restant dans le header
+// Fonction pour afficher le timer
 function drawTimer() {
     const timerDisplay = document.getElementById('timerDisplay');
     let minutes = Math.floor(timeRemaining / 60);
@@ -48,15 +46,16 @@ function drawTimer() {
     timerDisplay.textContent = `${minutes}:${seconds}`;
 }
  
-// Fonction pour mettre à jour le timer
+// Mise à jour du timer
 function updateTimer() {
     if (timeRemaining > 0 && !gameOver) {
         timeRemaining--;
     } else if (timeRemaining === 0) {
-        gameOver = true;  // Arrêter le jeu une fois que le temps est écoulé
+        gameOver = true;
     }
 }
  
+// Vérification de collision entre deux objets
 function checkCollision(obj1, obj2) {
     return (
         obj1.x < obj2.x + obj2.width &&
@@ -66,91 +65,101 @@ function checkCollision(obj1, obj2) {
     );
 }
  
-function checkObstacleCollisions(player) {
-    return obstacles.some(obstacle => checkCollision(player, obstacle));
+// Vérification des collisions avec les obstacles
+function checkObstacleCollisions(player, newX, newY) {
+    return obstacles.some(obstacle =>
+        checkCollision(
+            { x: newX, y: newY, width: player.width, height: player.height },
+            obstacle
+        )
+    );
 }
  
-function checkPlayerCollisions() {
-    // Vérifier si les deux joueurs se touchent
-    if (checkCollision(player1, player2)) {
-        // Incrémenter le score du joueur qui touche l'autre
-        player1.score++;  
-        player2.score++;  
- 
-        // Mettre à jour l'affichage des scores dans le DOM
-        updateScoreDisplay();
-    }
-}
- 
-// Vérification des collisions entre balles et joueurs
+// Gestion des collisions des balles avec obstacles et joueurs
 function checkBulletCollisions() {
-    bullets.forEach(bullet => {
-        if (bullet.direction === 'right' &&
+    bullets = bullets.filter(bullet => {
+        // Collision avec obstacles
+        for (let obstacle of obstacles) {
+            if (
+                bullet.x + 5 > obstacle.x &&
+                bullet.x < obstacle.x + obstacle.width &&
+                bullet.y > obstacle.y &&
+                bullet.y < obstacle.y + obstacle.height
+            ) {
+                return false; // Supprime la balle
+            }
+        }
+ 
+        // Collision avec joueurs
+        if (
+            bullet.direction === 'right' &&
             bullet.x > player2.x &&
             bullet.y > player2.y &&
-            bullet.y < player2.y + player2.height) {
-            // Si la balle touche le joueur 2
-            player1.score++;  // Joueur 1 gagne un point
-            bullet.x = -10; // Supprimer la balle
-            updateScoreDisplay();  // Mettre à jour l'affichage du score
+            bullet.y < player2.y + player2.height
+        ) {
+            player1.score++;
+            updateScoreDisplay();
+            return false; // Supprime la balle
         }
-       
-        if (bullet.direction === 'left' &&
+        if (
+            bullet.direction === 'left' &&
             bullet.x < player1.x + player1.width &&
             bullet.y > player1.y &&
-            bullet.y < player1.y + player1.height) {
-            // Si la balle touche le joueur 1
-            player2.score++;  // Joueur 2 gagne un point
-            bullet.x = -10; // Supprimer la balle
-            updateScoreDisplay();  // Mettre à jour l'affichage du score
+            bullet.y < player1.y + player1.height
+        ) {
+            player2.score++;
+            updateScoreDisplay();
+            return false; // Supprime la balle
         }
+ 
+        return true; // Conserve la balle
     });
 }
  
-// Boucle de déplacement des balles
-function moveBullets() {
-    bullets = bullets.filter(bullet => bullet.x > 0 && bullet.x < canvas.width);  // Supprimer les balles hors de l'écran
-    bullets.forEach(bullet => {
-        bullet.x += bullet.direction === 'right' ? bulletSpeed : -bulletSpeed; // Déplacement de la balle
-    });
-}
- 
-// Met à jour l'affichage du score
+// Mise à jour des scores
 function updateScoreDisplay() {
     document.getElementById('scorePlayer1').textContent = player1.score;
     document.getElementById('scorePlayer2').textContent = player2.score;
 }
  
-// Fonction de gestion du déplacement des joueurs
+// Déplacement des balles
+function moveBullets() {
+    bullets.forEach(bullet => {
+        bullet.x += bullet.direction === 'right' ? bulletSpeed : -bulletSpeed;
+    });
+    bullets = bullets.filter(bullet => bullet.x > 0 && bullet.x < canvas.width); // Retire les balles hors de l'écran
+}
+ 
+// Déplacement des joueurs
 function movePlayers() {
-    if (keys['w'] && player1.y > 0 && !checkObstacleCollisions({ x: player1.x, y: player1.y - 5, width: player1.width, height: player1.height }) && !checkCollision(player1, player2)) {
+    if (keys['w'] && player1.y > 0 && !checkObstacleCollisions(player1, player1.x, player1.y - 5)) {
         player1.y -= 5;
     }
-    if (keys['s'] && player1.y < canvas.height - player1.height && !checkObstacleCollisions({ x: player1.x, y: player1.y + 5, width: player1.width, height: player1.height }) && !checkCollision(player1, player2)) {
+    if (keys['s'] && player1.y < canvas.height - player1.height && !checkObstacleCollisions(player1, player1.x, player1.y + 5)) {
         player1.y += 5;
     }
-    if (keys['a'] && player1.x > 0 && !checkObstacleCollisions({ x: player1.x - 5, y: player1.y, width: player1.width, height: player1.height }) && !checkCollision(player1, player2)) {
+    if (keys['a'] && player1.x > 0 && !checkObstacleCollisions(player1, player1.x - 5, player1.y)) {
         player1.x -= 5;
     }
-    if (keys['d'] && player1.x < canvas.width - player1.width && !checkObstacleCollisions({ x: player1.x + 5, y: player1.y, width: player1.width, height: player1.height }) && !checkCollision(player1, player2)) {
+    if (keys['d'] && player1.x < canvas.width - player1.width && !checkObstacleCollisions(player1, player1.x + 5, player1.y)) {
         player1.x += 5;
     }
  
-    if (keys['ArrowUp'] && player2.y > 0 && !checkObstacleCollisions({ x: player2.x, y: player2.y - 5, width: player2.width, height: player2.height }) && !checkCollision(player2, player1)) {
+    if (keys['ArrowUp'] && player2.y > 0 && !checkObstacleCollisions(player2, player2.x, player2.y - 5)) {
         player2.y -= 5;
     }
-    if (keys['ArrowDown'] && player2.y < canvas.height - player2.height && !checkObstacleCollisions({ x: player2.x, y: player2.y + 5, width: player2.width, height: player2.height }) && !checkCollision(player2, player1)) {
+    if (keys['ArrowDown'] && player2.y < canvas.height - player2.height && !checkObstacleCollisions(player2, player2.x, player2.y + 5)) {
         player2.y += 5;
     }
-    if (keys['ArrowLeft'] && player2.x > 0 && !checkObstacleCollisions({ x: player2.x - 5, y: player2.y, width: player2.width, height: player2.height }) && !checkCollision(player2, player1)) {
+    if (keys['ArrowLeft'] && player2.x > 0 && !checkObstacleCollisions(player2, player2.x - 5, player2.y)) {
         player2.x -= 5;
     }
-    if (keys['ArrowRight'] && player2.x < canvas.width - player2.width && !checkObstacleCollisions({ x: player2.x + 5, y: player2.y, width: player2.width, height: player2.height }) && !checkCollision(player2, player1)) {
+    if (keys['ArrowRight'] && player2.x < canvas.width - player2.width && !checkObstacleCollisions(player2, player2.x + 5, player2.y)) {
         player2.x += 5;
     }
 }
  
-// Fonction de tir des balles
+// Fonction pour tirer des balles
 function shootBullet(player, direction) {
     bullets.push({
         x: player.x + player.width / 2,
@@ -159,13 +168,13 @@ function shootBullet(player, direction) {
     });
 }
  
-// Boucle de jeu principale
+// Boucle principale du jeu
 function gameLoop() {
     if (gameOver) {
         ctx.fillStyle = 'black';
         ctx.font = '30px Arial';
         ctx.fillText('Game Over!', canvas.width / 2 - 100, canvas.height / 2);
-        return; // Arrêter le jeu lorsque le temps est écoulé
+        return;
     }
  
     ctx.fillStyle = '#2e2e2e';
@@ -176,19 +185,18 @@ function gameLoop() {
     drawPlayer(player2);
     movePlayers();
     moveBullets();
-    checkPlayerCollisions();  // Vérifier les collisions entre les joueurs
-    checkBulletCollisions();  // Vérifier les collisions entre les balles et les joueurs
+    checkBulletCollisions();
  
     bullets.forEach(bullet => {
         ctx.fillStyle = 'yellow';
         ctx.fillRect(bullet.x, bullet.y, 5, 5);
     });
  
-    drawTimer(); // Afficher le timer
+    drawTimer();
     requestAnimationFrame(gameLoop);
 }
  
-// Événements clavier
+// Gestion des événements clavier
 document.addEventListener('keydown', e => {
     keys[e.key] = true;
     if (e.key === ' ') shootBullet(player1, 'right');
@@ -196,8 +204,9 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('keyup', e => keys[e.key] = false);
  
-// Démarrer le timer
+// Lancer le timer
 setInterval(updateTimer, 1000);
  
 // Démarrage du jeu
 gameLoop();
+ 
