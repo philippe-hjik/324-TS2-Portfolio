@@ -1,3 +1,4 @@
+
 // Mise à jour des scores
 export function updateScoreDisplay(player1Score, player2Score) {
     document.getElementById('team1-score').textContent = `Team 1: ${player1Score}`;

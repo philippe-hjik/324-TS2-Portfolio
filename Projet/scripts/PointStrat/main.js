@@ -15,7 +15,7 @@ setInterval(() => {
 
     // Réduit le temps toutes les secondes
     if (timeRemaining > 0) {
-        timeRemaining--;
+        //timeRemaining = 1;
     } else {
         gameOver = true;
     }
