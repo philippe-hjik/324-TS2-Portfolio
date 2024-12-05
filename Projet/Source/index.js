@@ -2,10 +2,10 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Variables du jeu
-let player1 = { x: 50, y: 250, width: 20, height: 20, color: 'green', score: 0, ammo: 5 };
-let player2 = { x: 730, y: 250, width: 20, height: 20, color: 'brown', score: 0, ammo: 5 };
+let player1 = { x: 50, y: 250, width: 30, height: 30, color: 'green', score: 0, ammo: 10 };
+let player2 = { x: 730, y: 250, width: 30, height: 30  , color: 'brown', score: 0, ammo: 10 };
 let bullets = [];
-const bulletSpeed = 8;
+const bulletSpeed = 15;
 const keys = {};
 const obstacles = [
     { x: 200, y: 150, width: 50, height: 50 },
@@ -90,10 +90,11 @@ function checkBulletCollisions() {
             }
         }
 
-        // Collision avec joueurs
+        // Collision avec le joueur 2
         if (
             bullet.direction === 'right' &&
-            bullet.x == player2.x &&
+            bullet.x > player2.x &&
+            bullet.x < player2.x + player2.width &&
             bullet.y > player2.y &&
             bullet.y < player2.y + player2.height
         ) {
@@ -101,9 +102,12 @@ function checkBulletCollisions() {
             updateScoreDisplay();
             return false; // Supprime la balle
         }
+
+        // Collision avec le joueur 1
         if (
             bullet.direction === 'left' &&
-            bullet.x == player1.x + player1.width &&
+            bullet.x < player1.x + player1.width &&
+            bullet.x > player1.x &&
             bullet.y > player1.y &&
             bullet.y < player1.y + player1.height
         ) {
