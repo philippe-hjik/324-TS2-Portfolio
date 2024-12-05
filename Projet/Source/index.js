@@ -5,7 +5,7 @@ const ctx = canvas.getContext('2d');
 let player1 = { x: 50, y: 250, width: 20, height: 20, color: 'green', score: 0, ammo: 5 };
 let player2 = { x: 730, y: 250, width: 20, height: 20, color: 'brown', score: 0, ammo: 5 };
 let bullets = [];
-const bulletSpeed = 5;
+const bulletSpeed = 8;
 const keys = {};
 const obstacles = [
     { x: 200, y: 150, width: 50, height: 50 },
@@ -93,7 +93,7 @@ function checkBulletCollisions() {
         // Collision avec joueurs
         if (
             bullet.direction === 'right' &&
-            bullet.x < player2.x &&
+            bullet.x == player2.x &&
             bullet.y > player2.y &&
             bullet.y < player2.y + player2.height
         ) {
@@ -103,7 +103,7 @@ function checkBulletCollisions() {
         }
         if (
             bullet.direction === 'left' &&
-            bullet.x < player1.x + player1.width &&
+            bullet.x == player1.x + player1.width &&
             bullet.y > player1.y &&
             bullet.y < player1.y + player1.height
         ) {
