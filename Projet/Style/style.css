@@ -1,0 +1,37 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #121212;
+    color: #fff;
+}
+
+#game-container {
+    margin: 20px auto;
+    width: 80%;
+}
+
+#map {
+    position: relative;
+    width: 800px;
+    height: 400px;
+    background-color: #333;
+    margin: 20px auto;
+    border: 2px solid #fff;
+}
+
+#scoreboard {
+    display: flex;
+    justify-content: space-around;
+    font-size: 20px;
+}
+
+canvas {
+    background-color: #333;
+    border: 2px solid #fff;
+}
+
+.player {
+    border: 1px solid black;
+    border-radius: 4px;
+    transition: left 0.1s, top 0.1s; /* Animation fluide des mouvements */
+}
