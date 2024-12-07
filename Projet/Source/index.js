@@ -92,11 +92,12 @@ function checkBulletCollisions() {
 
         // Collision avec le joueur 2
         if (
-            bullet.direction === 'right' &&
+            // bullet.direction === 'right' &&
             bullet.x > player2.x &&
             bullet.x < player2.x + player2.width &&
             bullet.y > player2.y &&
-            bullet.y < player2.y + player2.height
+            bullet.y < player2.y + player2.height &&
+            bullet.owner === 'player1'
         ) {
             player1.score++;
             updateScoreDisplay();
@@ -105,11 +106,12 @@ function checkBulletCollisions() {
 
         // Collision avec le joueur 1
         if (
-            bullet.direction === 'left' &&
+            // bullet.direction === 'left' &&
             bullet.x < player1.x + player1.width &&
             bullet.x > player1.x &&
             bullet.y > player1.y &&
-            bullet.y < player1.y + player1.height
+            bullet.y < player1.y + player1.height &&
+            bullet.owner === 'player2'
         ) {
             player2.score++;
             updateScoreDisplay();
@@ -169,20 +171,31 @@ function movePlayers() {
     }
 }
 
+// Fonction pour déterminer la direction des tirs
+function getBulletDirection(player, opponent) {
+    if (player.x < opponent.x) {
+        return 'right';
+    } else {
+        return 'left';
+    }
+}
+
 // Fonction pour tirer des balles
-function shootBullet(player, direction) {
+function shootBullet(player, opponent) {
     if (player.ammo > 0) {
+        const direction = getBulletDirection(player, opponent);
         bullets.push({
             x: player.x + player.width / 2,
             y: player.y + player.height / 2,
-            direction
+            direction,
+            owner: player === player1 ? 'player1' : 'player2'
         });
         player.ammo--;
         updateAmmoDisplay();
     }
 }
 
-// Recharge des munitions toutes les 3 secondes
+// Recharge les munitions
 function reloadAmmo(player) {
     if (player.ammo < 5) {
         player.ammo++;
@@ -190,10 +203,16 @@ function reloadAmmo(player) {
     }
 }
 
+// Déclanche le rechargement toutes les 3 sec
 setInterval(() => {
     reloadAmmo(player1);
     reloadAmmo(player2);
-}, 3000);
+}, 0);
+
+// Fonction pour recharger la page
+function reloadPage() {
+    location.reload();
+}
 
 // Boucle principale du jeu
 function gameLoop() {
@@ -226,12 +245,18 @@ function gameLoop() {
 // Gestion des événements clavier
 document.addEventListener('keydown', e => {
     keys[e.key] = true;
-    if (e.key === ' ' && player1.ammo > 0) shootBullet(player1, 'right');
-    if (e.key === 'Enter' && player2.ammo > 0) shootBullet(player2, 'left');
+    if (e.key === ' ' && player1.ammo > 0 && !gameOver) shootBullet(player1, player2);
+    if (e.key === 'Enter') {
+        if (gameOver) {
+            reloadPage();
+        } else if (player2.ammo > 0) {
+            shootBullet(player2, player1);
+        }
+    }
 });
 document.addEventListener('keyup', e => keys[e.key] = false);
 
-// Lancer le timer
+// Lancer le timerw
 setInterval(updateTimer, 1000);
 
 // Démarrage du jeu
