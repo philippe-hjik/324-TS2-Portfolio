@@ -8,6 +8,7 @@ body {
 #game-container {
     margin: 20px auto;
     width: 80%;
+    text-align: center; /* Centrer le contenu horizontalement */
 }
 
 #map {
@@ -28,6 +29,23 @@ body {
 canvas {
     background-color: #333;
     border: 2px solid #fff;
+}
+
+#gameCanvas {
+    display: block;
+    margin: 0 auto; /* Centrer le canvas horizontalement */
+}
+
+button {
+    display: block;
+    background-color: #333;
+    color: #fff;
+    border: 2px solid #fff;
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    margin: 20px auto 0; /* Centrer le bouton horizontalement et ajouter une marge en haut */
 }
 
 .player {

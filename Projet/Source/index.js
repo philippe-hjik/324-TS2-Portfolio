@@ -214,12 +214,24 @@ function reloadPage() {
     location.reload();
 }
 
+// Fonction pour sauvegarder le score du vainqueur
+function saveWinnerScore(winner) {
+    const scores = JSON.parse(localStorage.getItem('scores')) || [];
+    scores.push({ player: winner, score: winner === 'player1' ? player1.score : player2.score });
+    localStorage.setItem('scores', JSON.stringify(scores));
+}
+
 // Boucle principale du jeu
 function gameLoop() {
     if (gameOver) {
         ctx.fillStyle = 'black';
         ctx.font = '30px Arial';
         ctx.fillText('Game Over!', canvas.width / 2 - 100, canvas.height / 2);
+
+        // Sauvegarde du score du vainqueur
+        const winner = player1.score > player2.score ? 'player1' : 'player2';
+        saveWinnerScore(winner);
+
         return;
     }
 
@@ -234,7 +246,7 @@ function gameLoop() {
     checkBulletCollisions();
 
     bullets.forEach(bullet => {
-        ctx.fillStyle = 'yellow';
+        ctx.fillStyle = bullet.owner === 'player1' ? 'green' : 'brown';
         ctx.fillRect(bullet.x, bullet.y, 5, 5);
     });
 
