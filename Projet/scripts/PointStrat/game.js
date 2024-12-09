@@ -78,14 +78,11 @@ function updateTimer() {
 
         // Marque un point pour un joueur si nécessaire
         if (pointScorer === 1) {
-            player1Points++; // Marque un point pour player1
-            console.log("Player 1 marque un point!");
+            player1.score++; // Marque un point pour player1
         } else if (pointScorer === 2) {
-            player2Points++; // Marque un point pour player2
-            console.log("Player 2 marque un point!");
+            player2.score++; // Marque un point pour player2
         }else{
             timeRemaining--;
-            console.log("Les deux joueurs sont sur le point. Le temps s'écoule.");
         }
 
     } else if (timeRemaining === 0) {
@@ -99,19 +96,16 @@ function onPointPlayer() {
 
     // Si les deux joueurs sont sur le point
     if (checkInsideObject(player1, currentPoint) && checkInsideObject(player2, currentPoint)) {
-        console.error("Les deux joueurs sont sur le point");
         return null; // Aucun joueur ne marque
     }
     
     // Si seulement player1 est sur le point
     else if (checkInsideObject(player1, currentPoint)) {
-        console.error("Player 1 est sur le point");
         return 1; // Player 1 marque un point
     }
     
     // Si seulement player2 est sur le point
     else if (checkInsideObject(player2, currentPoint)) {
-        console.error("Player 2 est sur le point");
         return 2; // Player 2 marque un point
     }
 }
@@ -189,8 +183,8 @@ function checkBulletCollisions() {
  
 // Mise à jour des scores
 function updateScoreDisplay() {
-    document.getElementById('team1-score').textContent = player1.score;
-    document.getElementById('team2-score').textContent = player2.score;
+    document.getElementById('team1-score').textContent = "Team 1: "+ player1.score;
+    document.getElementById('team2-score').textContent = "Team 2: "+ player2.score;
 }
  
 // Déplacement des balles
@@ -259,7 +253,8 @@ function gameLoop() {
     moveBullets();
     checkBulletCollisions();
     onPointPlayer();
- 
+    updateScoreDisplay();
+
     bullets.forEach(bullet => {
         ctx.fillStyle = 'yellow';
         ctx.fillRect(bullet.x, bullet.y, 5, 5);
