@@ -71,7 +71,7 @@ function drawTimer() {
  
 // Mise à jour du timer
 function updateTimer() {
-    if (timeRemaining > 0 && !gameOver) {
+    if (timeRemaining > 0 && !gameOver && onPointPlayer() != false) {
         timeRemaining--;
     } else if (timeRemaining === 0) {
         gameOver = true;
@@ -84,13 +84,16 @@ function onPointPlayer(){
     let currentPoint = stratPoint.find(x => x.active);
 
     if(checkInsideObject(player1, currentPoint) && checkInsideObject(player2, currentPoint)){
-        console.error("player 1 et 2 ");
+        console.error("player 1 et 2");
+        return true
     }
     else if(checkInsideObject(player1, currentPoint)){
         console.error("player 1 sur le ");
+        return false
     }
     else if(checkInsideObject(player2, currentPoint)){
         console.error("player 2 sur le ");
+        return false
     }
  
 }
