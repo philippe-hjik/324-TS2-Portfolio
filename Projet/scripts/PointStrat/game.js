@@ -14,8 +14,10 @@ const obstacles = [
 ];
 
 const stratPoint = [
-    { x: 250, y: 250, width: 120, height: 90, active: false },
-    { x: 500, y: 10, width: 70, height: 140, active: true },
+    { x: 250, y: 250, width: 120, height: 90, active: true },
+    { x: 300, y: 50, width: 200, height: 70, active: false },
+    { x: 700, y: 50, width: 90, height: 140, active: false },
+    { x: 70, y: 50, width: 90, height: 140, active: false },
 ];
  
 // Timer
@@ -24,6 +26,8 @@ let gameOver = false;
 
 // Score
 let timeOnPoint = 0;
+let timeAllow = 5;
+let timeBeforeNext = timeAllow;
 
 const maxPoint = 255;
  
@@ -84,12 +88,38 @@ function updateTimer() {
         }else{
             timeRemaining--;
         }
+        timeBeforeNext--;
+        // Vérifier toutes les 20 secondes si le point stratégique doit changer
+        if (timeBeforeNext <= 0) {
+            changeStratPoint(); // Change le point stratégique
+            timeBeforeNext = timeAllow; // Met à jour le temps du dernier changement
+        }
 
     } else if (timeRemaining === 0) {
         gameOver = true;
     }
 }
 
+// Fonction qui change le point stratégique (ordonné)
+function changeStratPoint() {
+    
+    let currentPoint = stratPoint.find(x => x.active); // Cherche le point actif
+    let index = stratPoint.findIndex(x => x.active === true);
+    
+    if(index !== -1)
+    {
+        currentPoint.active = false;
+        if(index + 1 == stratPoint.length){
+            stratPoint[0].active = true;
+        }else {
+            stratPoint[index + 1].active = true;
+        }
+    }else{
+        console.error("Aucun point actif  trouvé");
+    }
+
+
+}
 // Vérification de qui est sur le point Strat
 function onPointPlayer() {
     let currentPoint = stratPoint.find(x => x.active); // Cherche le point actif
@@ -185,6 +215,7 @@ function checkBulletCollisions() {
 function updateScoreDisplay() {
     document.getElementById('team1-score').textContent = "Team 1: "+ player1.score;
     document.getElementById('team2-score').textContent = "Team 2: "+ player2.score;
+    document.getElementById('TimeOnPoint').textContent = timeBeforeNext;
 }
  
 // Déplacement des balles
