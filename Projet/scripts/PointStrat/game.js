@@ -71,31 +71,49 @@ function drawTimer() {
  
 // Mise à jour du timer
 function updateTimer() {
-    if (timeRemaining > 0 && !gameOver && onPointPlayer() != false) {
-        timeRemaining--;
+  
+    if (timeRemaining > 0 && !gameOver) {
+
+        let pointScorer = onPointPlayer(); // Vérifie si un joueur marque un point
+
+        // Marque un point pour un joueur si nécessaire
+        if (pointScorer === 1) {
+            player1Points++; // Marque un point pour player1
+            console.log("Player 1 marque un point!");
+        } else if (pointScorer === 2) {
+            player2Points++; // Marque un point pour player2
+            console.log("Player 2 marque un point!");
+        }else{
+            timeRemaining--;
+            console.log("Les deux joueurs sont sur le point. Le temps s'écoule.");
+        }
+
     } else if (timeRemaining === 0) {
         gameOver = true;
     }
 }
 
 // Vérification de qui est sur le point Strat
-function onPointPlayer(){
+function onPointPlayer() {
+    let currentPoint = stratPoint.find(x => x.active); // Cherche le point actif
 
-    let currentPoint = stratPoint.find(x => x.active);
-
-    if(checkInsideObject(player1, currentPoint) && checkInsideObject(player2, currentPoint)){
-        console.error("player 1 et 2");
-        return true
+    // Si les deux joueurs sont sur le point
+    if (checkInsideObject(player1, currentPoint) && checkInsideObject(player2, currentPoint)) {
+        console.error("Les deux joueurs sont sur le point");
+        return null; // Aucun joueur ne marque
     }
-    else if(checkInsideObject(player1, currentPoint)){
-        console.error("player 1 sur le ");
-        return false
+    
+    // Si seulement player1 est sur le point
+    else if (checkInsideObject(player1, currentPoint)) {
+        console.error("Player 1 est sur le point");
+        return 1; // Player 1 marque un point
     }
-    else if(checkInsideObject(player2, currentPoint)){
-        console.error("player 2 sur le ");
-        return false
+    
+    // Si seulement player2 est sur le point
+    else if (checkInsideObject(player2, currentPoint)) {
+        console.error("Player 2 est sur le point");
+        return 2; // Player 2 marque un point
     }
- 
 }
 
 // Vérification de collision entre deux objets
