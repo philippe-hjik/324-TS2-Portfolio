@@ -63,22 +63,22 @@ function drawStratPoint() {
     });
 }
 
-function playerRespawn(){
-
-let point = { x: 600, y: 400};
+function respawnPlayer(player, x, y) {
+    
+    player.x = x;
+    player.y = y;
+}
+function checkRespawn(){
 
     if(!player1.alive){
 
         // Si le player 2 est le plus loin de 0:0 
-        if(
-            Math.sqrt(Math.pow(player2.x - 0, 2) + Math.pow(player2.y - 0, 2)) > Math.sqrt(Math.pow(player2.x - canvas.width, 2) +  Math.pow(player2.y - canvas.height, 2))){
+        if(Math.sqrt(Math.pow(player2.x - 0, 2) + Math.pow(player2.y - 0, 2)) > Math.sqrt(Math.pow(player2.x - canvas.width, 2) +  Math.pow(player2.y - canvas.height, 2))){
 
-            player1.x = player1.width;
-            player1.y = player1.height;
+            respawnPlayer(player1, player1.width, player2.height);
 
         }else{
-            player1.x = canvas.width - player1.width;
-            player1.y = canvas.height - player1.height;
+            respawnPlayer(player1, canvas.width - player1.width, canvas.height - player1.height);
         }
 
         player1.alive = true;
@@ -87,11 +87,12 @@ let point = { x: 600, y: 400};
     if(!player2.alive){
         // Si le player 2 est le plus loin de 0:0 
         if(Math.sqrt(Math.pow(player1.x-0, 2) +  Math.pow(player1.y - 0, 2)) > Math.sqrt(Math.pow(player1.x - canvas.width, 2) +  Math.pow(player1.y - canvas.height, 2))){
-            player2.x = player2.width;
-            player2.y = player2.height;
+
+            respawnPlayer(player2, player2.width, player2.height);
+
         }else{
-            player2.x = canvas.width - player2.width;
-            player2.y = canvas.height - player2.height;
+
+            respawnPlayer(player2, canvas.width - player2.width, canvas.height - player2.height);
         }
         player2.alive = true;
     }
@@ -347,7 +348,7 @@ function gameLoop() {
         ctx.fillStyle = 'yellow';
         ctx.fillRect(bullet.x, bullet.y, 5, 5);
     });
-    playerRespawn();
+    checkRespawn();
     drawTimer();
     requestAnimationFrame(gameLoop);
 }
