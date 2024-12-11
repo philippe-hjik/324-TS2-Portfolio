@@ -19,7 +19,14 @@ const stratPoint = [
     { x: 700, y: 50, width: 90, height: 140, active: false },
     { x: 70, y: 50, width: 90, height: 140, active: false },
 ];
- 
+
+const respawnPoints = [
+    { x: 20, y: 20 },
+    { x: 300, y: 50 },
+    { x: 50, y: 300 },
+    { x: canvas.width - player1.width, y: canvas.height - player1.height },
+];
+
 // Timer
 let timeRemaining = 90;
 let gameOver = false;
@@ -63,37 +70,47 @@ function drawStratPoint() {
     });
 }
 
-function respawnPlayer(player, x, y) {
+function respawnPlayer(player, point) {
     
-    player.x = x;
-    player.y = y;
+    player.x = point.x;
+    player.y = point.y;
 }
+
+function findFurthestRespawnPoint(player, respawnPoints) {
+    let furthestPoint = respawnPoints[0];
+    let maxDistance = 0;
+
+    respawnPoints.forEach(point => {
+        // Calcul de la distance entre player2 et chaque point
+        let distance = Math.sqrt(Math.pow(point.x - player.x, 2) + Math.pow(point.y - player.y, 2));
+
+        // On compare la distance avec la distance maximale actuelle
+        if (distance > maxDistance) {
+            maxDistance = distance;
+            furthestPoint = point;
+        }
+    });
+
+    return furthestPoint;
+}
+
 function checkRespawn(){
 
     if(!player1.alive){
 
-        // Si le player 2 est le plus loin de 0:0 
-        if(Math.sqrt(Math.pow(player2.x - 0, 2) + Math.pow(player2.y - 0, 2)) > Math.sqrt(Math.pow(player2.x - canvas.width, 2) +  Math.pow(player2.y - canvas.height, 2))){
+        let furthestRespawnPoint = findFurthestRespawnPoint(player2, respawnPoints);
 
-            respawnPlayer(player1, player1.width, player2.height);
-
-        }else{
-            respawnPlayer(player1, canvas.width - player1.width, canvas.height - player1.height);
-        }
+        respawnPlayer(player1, furthestRespawnPoint);
 
         player1.alive = true;
     }
     
     if(!player2.alive){
-        // Si le player 2 est le plus loin de 0:0 
-        if(Math.sqrt(Math.pow(player1.x-0, 2) +  Math.pow(player1.y - 0, 2)) > Math.sqrt(Math.pow(player1.x - canvas.width, 2) +  Math.pow(player1.y - canvas.height, 2))){
 
-            respawnPlayer(player2, player2.width, player2.height);
+        let furthestRespawnPoint = findFurthestRespawnPoint(player1, respawnPoints);
 
-        }else{
+        respawnPlayer(player2, furthestRespawnPoint);
 
-            respawnPlayer(player2, canvas.width - player2.width, canvas.height - player2.height);
-        }
         player2.alive = true;
     }
         
