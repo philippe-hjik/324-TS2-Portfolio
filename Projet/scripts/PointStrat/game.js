@@ -2,8 +2,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
  
 // Variables du jeu
-let player1 = { x: 50, y: 250, width: 20, height: 20, color: 'green', score: 0 };
-let player2 = { x: 730, y: 250, width: 20, height: 20, color: 'brown', score: 0 };
+let player1 = { x: 50, y: 250, width: 20, height: 20, color: 'green', score: 0, lastKey: 'right' };
+let player2 = { x: 730, y: 250, width: 20, height: 20, color: 'brown', score: 0, lastKey: 'left' };
 let bullets = [];
 const bulletSpeed = 5;
 const keys = {};
@@ -26,9 +26,8 @@ let gameOver = false;
 
 // Score
 let timeOnPoint = 0;
-let timeAllow = 5;
+let timeAllow = 20;
 let timeBeforeNext = timeAllow;
-
 const maxPoint = 255;
  
 // Dessin des joueurs
@@ -115,7 +114,7 @@ function changeStratPoint() {
             stratPoint[index + 1].active = true;
         }
     }else{
-        console.error("Aucun point actif  trouvé");
+        console.error("Aucun point actif trouvé");
     }
 
 
@@ -188,7 +187,7 @@ function checkBulletCollisions() {
         // Collision avec joueurs
         if (
             bullet.direction === 'right' &&
-            bullet.x > player2.x &&
+            bullet.x == player2.x &&
             bullet.y > player2.y &&
             bullet.y < player2.y + player2.height
         ) {
@@ -198,7 +197,7 @@ function checkBulletCollisions() {
         }
         if (
             bullet.direction === 'left' &&
-            bullet.x < player1.x + player1.width &&
+            bullet.x == player1.x + player1.width &&
             bullet.y > player1.y &&
             bullet.y < player1.y + player1.height
         ) {
@@ -221,7 +220,21 @@ function updateScoreDisplay() {
 // Déplacement des balles
 function moveBullets() {
     bullets.forEach(bullet => {
-        bullet.x += bullet.direction === 'right' ? bulletSpeed : -bulletSpeed;
+        switch(bullet.direction){
+            case 'right':
+                bullet.x += bulletSpeed;
+                break;
+            case 'left':
+                bullet.x -= bulletSpeed;
+                break;
+            case 'top':
+                bullet.y -= bulletSpeed;
+                break;
+            case 'down':
+                bullet.y += bulletSpeed;
+                break;
+        }
+        
     });
     bullets = bullets.filter(bullet => bullet.x > 0 && bullet.x < canvas.width); // Retire les balles hors de l'écran
 }
@@ -230,28 +243,36 @@ function moveBullets() {
 function movePlayers() {
     if (keys['w'] && player1.y > 0 && !checkObstacleCollisions(player1, player1.x, player1.y - 5)) {
         player1.y -= 5;
+        player1.lastKey = 'top';
     }
     if (keys['s'] && player1.y < canvas.height - player1.height && !checkObstacleCollisions(player1, player1.x, player1.y + 5)) {
         player1.y += 5;
+        player1.lastKey = 'down';
     }
     if (keys['a'] && player1.x > 0 && !checkObstacleCollisions(player1, player1.x - 5, player1.y)) {
         player1.x -= 5;
+        player1.lastKey = 'left';
     }
     if (keys['d'] && player1.x < canvas.width - player1.width && !checkObstacleCollisions(player1, player1.x + 5, player1.y)) {
         player1.x += 5;
+        player1.lastKey = 'right';
     }
  
     if (keys['ArrowUp'] && player2.y > 0 && !checkObstacleCollisions(player2, player2.x, player2.y - 5)) {
         player2.y -= 5;
+        player2.lastKey = 'top';
     }
     if (keys['ArrowDown'] && player2.y < canvas.height - player2.height && !checkObstacleCollisions(player2, player2.x, player2.y + 5)) {
         player2.y += 5;
+        player2.lastKey = 'down';
     }
     if (keys['ArrowLeft'] && player2.x > 0 && !checkObstacleCollisions(player2, player2.x - 5, player2.y)) {
         player2.x -= 5;
+        player2.lastKey = 'left';
     }
     if (keys['ArrowRight'] && player2.x < canvas.width - player2.width && !checkObstacleCollisions(player2, player2.x + 5, player2.y)) {
         player2.x += 5;
+        player2.lastKey = 'right';
     }
 }
  
@@ -298,8 +319,8 @@ function gameLoop() {
 // Gestion des événements clavier
 document.addEventListener('keydown', e => {
     keys[e.key] = true;
-    if (e.key === ' ') shootBullet(player1, 'right');
-    if (e.key === 'Enter') shootBullet(player2, 'left');
+    if (e.key === ' ') shootBullet(player1, player1.lastKey);
+    if (e.key === 'Enter') shootBullet(player2, player2.lastKey);
 });
 document.addEventListener('keyup', e => keys[e.key] = false);
  
