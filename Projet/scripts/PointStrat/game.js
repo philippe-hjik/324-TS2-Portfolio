@@ -2,8 +2,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
  
 // Variables du jeu
-let player1 = { x: 50, y: 250, width: 20, height: 20, color: 'green', score: 0, lastKey: 'right' };
-let player2 = { x: 730, y: 250, width: 20, height: 20, color: 'brown', score: 0, lastKey: 'left' };
+let player1 = { id: 1, x: 50, y: 250, width: 20, height: 20, color: 'green', score: 0, lastKey: 'right', alive: true };
+let player2 = { id: 2, x: 730, y: 250, width: 20, height: 20, color: 'brown', score: 0, lastKey: 'left', alive: true };
 let bullets = [];
 const bulletSpeed = 5;
 const keys = {};
@@ -62,7 +62,41 @@ function drawStratPoint() {
         }
     });
 }
- 
+
+function playerRespawn(){
+
+let point = { x: 600, y: 400};
+
+    if(!player1.alive){
+
+        // Si le player 2 est le plus loin de 0:0 
+        if(
+            Math.sqrt(Math.pow(player2.x - 0, 2) + Math.pow(player2.y - 0, 2)) > Math.sqrt(Math.pow(player2.x - canvas.width, 2) +  Math.pow(player2.y - canvas.height, 2))){
+
+            player1.x = player1.width;
+            player1.y = player1.height;
+
+        }else{
+            player1.x = canvas.width - player1.width;
+            player1.y = canvas.height - player1.height;
+        }
+
+        player1.alive = true;
+    }
+    
+    if(!player2.alive){
+        // Si le player 2 est le plus loin de 0:0 
+        if(Math.sqrt(Math.pow(player1.x-0, 2) +  Math.pow(player1.y - 0, 2)) > Math.sqrt(Math.pow(player1.x - canvas.width, 2) +  Math.pow(player1.y - canvas.height, 2))){
+            player2.x = player2.width;
+            player2.y = player2.height;
+        }else{
+            player2.x = canvas.width - player2.width;
+            player2.y = canvas.height - player2.height;
+        }
+        player2.alive = true;
+    }
+        
+}
 // Fonction pour afficher le timer
 function drawTimer() {
     const timerDisplay = document.getElementById('timerDisplay');
@@ -186,22 +220,24 @@ function checkBulletCollisions() {
  
         // Collision avec joueurs
         if (
-            bullet.direction === 'right' &&
+            bullet.playerId == 1 &&
             bullet.x == player2.x &&
             bullet.y > player2.y &&
             bullet.y < player2.y + player2.height
         ) {
-            player1.score++;
+            // Tue le player 2
+            player2.alive = false;
             updateScoreDisplay();
             return false; // Supprime la balle
         }
         if (
-            bullet.direction === 'left' &&
+            bullet.playerId == 2 &&
             bullet.x == player1.x + player1.width &&
             bullet.y > player1.y &&
             bullet.y < player1.y + player1.height
         ) {
-            player2.score++;
+            // Tue le player 1
+            player1.alive = false;
             updateScoreDisplay();
             return false; // Supprime la balle
         }
@@ -280,7 +316,8 @@ function shootBullet(player, direction) {
     bullets.push({
         x: player.x + player.width / 2,
         y: player.y + player.height / 2,
-        direction
+        direction,
+        playerId: player.id
     });
 }
  
@@ -310,7 +347,7 @@ function gameLoop() {
         ctx.fillStyle = 'yellow';
         ctx.fillRect(bullet.x, bullet.y, 5, 5);
     });
- 
+    playerRespawn();
     drawTimer();
     requestAnimationFrame(gameLoop);
 }
