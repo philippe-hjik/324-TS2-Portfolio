@@ -234,9 +234,8 @@ function moveBullets() {
                 bullet.y += bulletSpeed;
                 break;
         }
-        
     });
-    bullets = bullets.filter(bullet => bullet.x > 0 && bullet.x < canvas.width); // Retire les balles hors de l'écran
+    bullets = bullets.filter(bullet => bullet.x > 0 && bullet.x < canvas.width || bullet.y > 0 && bullet.y < canvas.height); // Retire les balles hors de l'écran
 }
  
 // Déplacement des joueurs
