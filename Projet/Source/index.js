@@ -160,20 +160,36 @@ function checkPlayerCollisions() {
         if (Math.abs(overlapX) > Math.abs(overlapY)) {
             // Déplacer horizontalement
             if (overlapX > 0) {
-                player1.x += 5;
-                player2.x -= 5;
+                if (!checkObstacleCollisions(player1, player1.x + 5, player1.y) && player1.x + player1.width + 5 <= canvas.width) {
+                    player1.x += 5;
+                }
+                if (!checkObstacleCollisions(player2, player2.x - 5, player2.y) && player2.x - 5 >= 0) {
+                    player2.x -= 5;
+                }
             } else {
-                player1.x -= 5;
-                player2.x += 5;
+                if (!checkObstacleCollisions(player1, player1.x - 5, player1.y) && player1.x - 5 >= 0) {
+                    player1.x -= 5;
+                }
+                if (!checkObstacleCollisions(player2, player2.x + 5, player2.y) && player2.x + player2.width + 5 <= canvas.width) {
+                    player2.x += 5;
+                }
             }
         } else {
             // Déplacer verticalement
             if (overlapY > 0) {
-                player1.y += 5;
-                player2.y -= 5;
+                if (!checkObstacleCollisions(player1, player1.x, player1.y + 5) && player1.y + player1.height + 5 <= canvas.height) {
+                    player1.y += 5;
+                }
+                if (!checkObstacleCollisions(player2, player2.x, player2.y - 5) && player2.y - 5 >= 0) {
+                    player2.y -= 5;
+                }
             } else {
-                player1.y -= 5;
-                player2.y += 5;
+                if (!checkObstacleCollisions(player1, player1.x, player1.y - 5) && player1.y - 5 >= 0) {
+                    player1.y -= 5;
+                }
+                if (!checkObstacleCollisions(player2, player2.x, player2.y + 5) && player2.y + player2.height + 5 <= canvas.height) {
+                    player2.y += 5;
+                }
             }
         }
 
@@ -289,6 +305,9 @@ function movePlayers() {
         player2.lastKey = 'right';
     }
 
+    // Vérification des collisions entre les joueurs
+    checkPlayerCollisions();
+
     // Vérification des ramassages de cartouches
     checkAmmoPickup(player1);
     checkAmmoPickup(player2);
@@ -373,7 +392,7 @@ document.addEventListener('keyup', e => keys[e.key] = false);
 // Génération des obstacles aléatoires
 generateRandomObstacles(5);
 
-// Génération des cartouches toutes les 5 secondes
+// Génération des cartouches toutes les 5 secondes 
 setInterval(spawnAmmoDrop, 5000);
 
 // Lancer le timer
