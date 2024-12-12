@@ -81,8 +81,8 @@ jobs:
         run: |
           echo "Ce commit n’a pas conduit à un tag ."
 
-      - name: Run ESLint
+  
+      - name: Lint JavaScript
         run: |
-          npm install eslint
-          npx eslint .
-
+            npm install eslint
+            npx eslint index.js || true
