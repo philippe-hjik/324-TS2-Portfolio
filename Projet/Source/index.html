@@ -3,30 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../Style/style.css">
     <title>Jeu 1v1</title>
-    <style>
-        canvas {
-            background: lightgrey;
-            display: block;
-            margin: auto;
-        }
-        h1 {
-            text-align: center;
-            font-family: Arial, sans-serif;
-        }
-        #scoreDisplay {
-            font-size: 20px;
-            margin-top: 10px;
-            text-align: center;
-        }
-    </style>
 </head>
 <body>
-    <h1>Jeu 1v1 - Temps restant : <span id="timerDisplay">1:30</span></h1>
-    <div id="scoreDisplay">
-        <p>Score Joueur Vert: <span id="scorePlayer1">0</span> | Score Joueur Rouge: <span id="scorePlayer2">0</span></p>
+    <h1>Jeu 1v1</h1>
+    <div id="scoreboard">
+        <p>Score Joueur Vert: <span id="scorePlayer1">0</span></p>
+        <p>Score Joueur Rouge: <span id="scorePlayer2">0</span></p>
+        <p>Temps restant: <span id="timerDisplay">1:30</span></p>
+    </div>
+    <div id="ammo-container">
+        <p>Munitions Joueur Vert: <span id="ammoPlayer1">10</span></p>
+        <p>Munitions Joueur Rouge: <span id="ammoPlayer2">10</span></p>
     </div>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     <script src="index.js"></script>
+    <div style="text-align: left; margin-top: 20px;">
+        <button onclick="window.location.href='../pages/menu.html'" style="padding: 10px 20px; font-size: 16px;">Retour au menu</button>
+    </div>
 </body>
 </html>
