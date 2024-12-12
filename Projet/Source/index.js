@@ -15,7 +15,7 @@ const obstacles = [
 ];
 
 // Timer
-let timeRemaining = 90;
+let timeRemaining = 5;
 let gameOver = false;
 
 // Dessin des joueurs
@@ -214,11 +214,29 @@ function reloadPage() {
 // Boucle principale du jeu
 function gameLoop() {
     if (gameOver) {
-        ctx.fillStyle = 'black';
-        ctx.font = '30px Arial';
-        ctx.fillText('Game Over!', canvas.width / 2 - 100, canvas.height / 2);
+        ctx.fillStyle = 'white';
+        ctx.font = '50px Arial';
+        ctx.textAlign = 'center';
+        if (player1.score > player2.score) {
+            ctx.fillStyle = 'green';
+            ctx.fillText('Player green Wins!', canvas.width / 2, canvas.height / 2.3);
+            ctx.fillStyle = 'white';
+            ctx.font = '40px Arial';
+            ctx.fillText('Press F5 to Restart', canvas.width / 2, canvas.height / 1.5);
+        } else if (player2.score > player1.score) {
+            ctx.fillStyle = 'red';
+            ctx.fillText('Player red Wins!', canvas.width / 2, canvas.height / 2.3);
+            ctx.fillStyle = 'white';
+            ctx.font = '40px Arial';
+            ctx.fillText('Press F5 to Restart', canvas.width / 2, canvas.height / 1.5);
+        } else {
+            ctx.fillText("It's a Draw!", canvas.width / 2, canvas.height / 2.3);
+            ctx.font = '40px Arial';
+            ctx.fillText('Press F5 to Restart', canvas.width / 2, canvas.height / 1.5);
+        }
         return;
     }
+
 
     ctx.fillStyle = '#2e2e2e';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -231,7 +249,7 @@ function gameLoop() {
     checkBulletCollisions();
 
     bullets.forEach(bullet => {
-        ctx.fillStyle = bullet.owner === 'player1' ? 'green' : 'red';
+        ctx.fillStyle = bullet.owner === 'player1' ? 'green' : 'brown';
         ctx.fillRect(bullet.x, bullet.y, 8, 8);
     });
 
