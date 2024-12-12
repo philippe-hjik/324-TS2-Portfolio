@@ -7,13 +7,28 @@ let player2 = { x: 730, y: 250, width: 30, height: 30, color: 'brown', score: 0,
 let bullets = [];
 let ammoDrops = [];
 const bulletSpeed = 15;
-const maxAmmo = 50;
+const maxAmmo = 30;
 const keys = {};
-const obstacles = [
-    { x: 200, y: 150, width: 50, height: 50 },
-    { x: 400, y: 300, width: 50, height: 50 },
-    { x: 600, y: 100, width: 50, height: 50 }
-];
+let obstacles = [];
+
+// Génération aléatoire des obstacles
+function generateRandomObstacles(count) {
+    obstacles = [];
+    while (obstacles.length < count) {
+        const obstacleX = Math.random() * (canvas.width - 50);
+        const obstacleY = Math.random() * (canvas.height - 50);
+        const newObstacle = { x: obstacleX, y: obstacleY, width: 50, height: 50 };
+
+        // Vérifie que l'obstacle ne chevauche pas les joueurs ou d'autres obstacles
+        const isColliding = obstacles.some(obstacle => checkCollision(obstacle, newObstacle)) ||
+            checkCollision(newObstacle, player1) ||
+            checkCollision(newObstacle, player2);
+
+        if (!isColliding) {
+            obstacles.push(newObstacle);
+        }
+    }
+}
 
 // Timer
 let timeRemaining = 25;
@@ -89,7 +104,7 @@ function spawnAmmoDrop() {
 function checkAmmoPickup(player) {
     ammoDrops = ammoDrops.filter(drop => {
         if (checkCollision(player, { x: drop.x, y: drop.y, width: 5, height: 5 })) {
-            player.ammo = Math.min(player.ammo + 8, maxAmmo); // Ajoute 5 munitions, sans dépasser maxAmmo
+            player.ammo = Math.min(player.ammo + 5, maxAmmo); // Ajoute 5 munitions, sans dépasser maxAmmo
             updateAmmoDisplay();
             return false;
         }
@@ -133,6 +148,37 @@ function checkObstacleCollisions(player, newX, newY) {
             obstacle
         )
     );
+}
+
+// Vérification de collision entre les joueurs
+function checkPlayerCollisions() {
+    if (checkCollision(player1, player2)) {
+        // Empêcher les joueurs de se superposer
+        const overlapX = (player1.x + player1.width / 2) - (player2.x + player2.width / 2);
+        const overlapY = (player1.y + player1.height / 2) - (player2.y + player2.height / 2);
+
+        if (Math.abs(overlapX) > Math.abs(overlapY)) {
+            // Déplacer horizontalement
+            if (overlapX > 0) {
+                player1.x += 5;
+                player2.x -= 5;
+            } else {
+                player1.x -= 5;
+                player2.x += 5;
+            }
+        } else {
+            // Déplacer verticalement
+            if (overlapY > 0) {
+                player1.y += 5;
+                player2.y -= 5;
+            } else {
+                player1.y -= 5;
+                player2.y += 5;
+            }
+        }
+
+        console.log("Collision entre les joueurs détectée !");
+    }
 }
 
 // Gestion des collisions des balles avec obstacles et joueurs
@@ -323,6 +369,9 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Enter' && player2.ammo > 0 && !gameOver) shootBullet(player2);
 });
 document.addEventListener('keyup', e => keys[e.key] = false);
+
+// Génération des obstacles aléatoires
+generateRandomObstacles(5);
 
 // Génération des cartouches toutes les 5 secondes
 setInterval(spawnAmmoDrop, 5000);
