@@ -1,13 +1,13 @@
-// Référence au canvas
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Variables du jeu
-let player1 = { x: 50, y: 250, width: 30, height: 30, color: 'green', score: 0, ammo: 10, lastKey: 'right', weaponOffset: { x: 35, y: 12 } };
-let player2 = { x: 730, y: 250, width: 30, height: 30, color: 'brown', score: 0, ammo: 10, lastKey: 'left', weaponOffset: { x: -5, y: 12 } };
+let player1 = { x: 50, y: 250, width: 30, height: 30, color: 'green', score: 0, ammo: 15, lastKey: 'right', weaponOffset: { x: 35, y: 12 } };
+let player2 = { x: 730, y: 250, width: 30, height: 30, color: 'brown', score: 0, ammo: 15, lastKey: 'left', weaponOffset: { x: -5, y: 12 } };
 let bullets = [];
+let ammoDrops = [];
 const bulletSpeed = 15;
-const maxAmmo = 10;
+const maxAmmo = 50;
 const keys = {};
 const obstacles = [
     { x: 200, y: 150, width: 50, height: 50 },
@@ -16,7 +16,7 @@ const obstacles = [
 ];
 
 // Timer
-let timeRemaining = 5;
+let timeRemaining = 25;
 let gameOver = false;
 
 // Dessin des joueurs
@@ -34,15 +34,15 @@ function drawWeapon(player) {
     let weaponX, weaponY;
     if (player.lastKey === 'right') {
         weaponX = player.x + player.width;
-        weaponY = player.y + player.height / 2 - 5;
+        weaponY = player.y + player.height / 2.2 - 5;
     } else if (player.lastKey === 'left') {
         weaponX = player.x - 10;
-        weaponY = player.y + player.height / 2 - 5;
+        weaponY = player.y + player.height / 2.2 - 5;
     } else if (player.lastKey === 'up') {
-        weaponX = player.x + player.width / 2 - 5;
+        weaponX = player.x + player.width / 2.2 - 5;
         weaponY = player.y - 10;
     } else if (player.lastKey === 'down') {
-        weaponX = player.x + player.width / 2 - 5;
+        weaponX = player.x + player.width / 2.2 - 5;
         weaponY = player.y + player.height;
     }
     ctx.fillRect(weaponX, weaponY, 10, 10); // Taille de l'arme
@@ -56,6 +56,44 @@ function drawObstacles() {
 
         ctx.strokeStyle = 'black';
         ctx.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+    });
+}
+
+// Dessin des cartouches
+function drawAmmoDrops() {
+    ctx.fillStyle = 'yellow';
+    ammoDrops.forEach(drop => {
+        ctx.fillRect(drop.x, drop.y, 10, 15);
+    });
+}
+
+// Génération des cartouches
+function spawnAmmoDrop() {
+    const dropX = Math.random() * (canvas.width - 5);
+    const dropY = Math.random() * (canvas.height - 5);
+
+    // Vérifier si l'emplacement est libre (pas dans un obstacle)
+    const isColliding = obstacles.some(obstacle =>
+        checkCollision(
+            { x: dropX, y: dropY, width: 5, height: 5 },
+            obstacle
+        )
+    );
+
+    if (!isColliding) {
+        ammoDrops.push({ x: dropX, y: dropY });
+    }
+}
+
+// Vérification de collision entre le joueur et les cartouches
+function checkAmmoPickup(player) {
+    ammoDrops = ammoDrops.filter(drop => {
+        if (checkCollision(player, { x: drop.x, y: drop.y, width: 5, height: 5 })) {
+            player.ammo = Math.min(player.ammo + 8, maxAmmo); // Ajoute 5 munitions, sans dépasser maxAmmo
+            updateAmmoDisplay();
+            return false;
+        }
+        return true;
     });
 }
 
@@ -148,13 +186,6 @@ function updateAmmoDisplay() {
     document.getElementById('ammoPlayer2').textContent = player2.ammo;
 }
 
-// Recharge automatique des munitions
-function reloadAmmo() {
-    if (player1.ammo < maxAmmo) player1.ammo++;
-    if (player2.ammo < maxAmmo) player2.ammo++;
-    updateAmmoDisplay();
-}
-
 // Déplacement des balles
 function moveBullets() {
     bullets.forEach(bullet => {
@@ -211,6 +242,10 @@ function movePlayers() {
         player2.x += 5;
         player2.lastKey = 'right';
     }
+
+    // Vérification des ramassages de cartouches
+    checkAmmoPickup(player1);
+    checkAmmoPickup(player2);
 }
 
 // Fonction pour tirer des balles
@@ -267,6 +302,7 @@ function gameLoop() {
     drawWeapon(player1);
     drawPlayer(player2);
     drawWeapon(player2);
+    drawAmmoDrops();
     movePlayers();
     moveBullets();
     checkBulletCollisions();
@@ -288,8 +324,8 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('keyup', e => keys[e.key] = false);
 
-// Recharge automatique des munitions toutes les secondes
-setInterval(reloadAmmo, 1000);
+// Génération des cartouches toutes les 5 secondes
+setInterval(spawnAmmoDrop, 5000);
 
 // Lancer le timer
 setInterval(updateTimer, 1000);
