@@ -4,14 +4,15 @@ on:
   push:
     branches:
       - main
+
 jobs:
- test-deployment:
+  test-deployment:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-         token: ${{ secrets.PAT }}
+          token: ${{ secrets.PAT }}
         
       - name: Setup Git
         run: |
@@ -81,8 +82,21 @@ jobs:
         run: |
           echo "Ce commit n’a pas conduit à un tag ."
 
-  
+  dependence-task:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Install npm
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y npm
+
+      - name: Install ESLint
+        run: |
+          npm install eslint --save-dev
+
       - name: Lint JavaScript
         run: |
-            npm install eslint
-            npx eslint index.js || true
+          npx eslint index.js || true
