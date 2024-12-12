@@ -1,9 +1,10 @@
+// Référence au canvas
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Variables du jeu
-let player1 = { x: 50, y: 250, width: 30, height: 30, color: 'green', score: 0, ammo: 10, lastKey: 'right' };
-let player2 = { x: 730, y: 250, width: 30, height: 30, color: 'brown', score: 0, ammo: 10, lastKey: 'left' };
+let player1 = { x: 50, y: 250, width: 30, height: 30, color: 'green', score: 0, ammo: 10, lastKey: 'right', weaponOffset: { x: 35, y: 12 } };
+let player2 = { x: 730, y: 250, width: 30, height: 30, color: 'brown', score: 0, ammo: 10, lastKey: 'left', weaponOffset: { x: -5, y: 12 } };
 let bullets = [];
 const bulletSpeed = 15;
 const maxAmmo = 10;
@@ -25,6 +26,26 @@ function drawPlayer(player) {
 
     ctx.strokeStyle = 'black';
     ctx.strokeRect(player.x, player.y, player.width, player.height);
+}
+
+// Dessin de l'arme
+function drawWeapon(player) {
+    ctx.fillStyle = 'black';
+    let weaponX, weaponY;
+    if (player.lastKey === 'right') {
+        weaponX = player.x + player.width;
+        weaponY = player.y + player.height / 2 - 5;
+    } else if (player.lastKey === 'left') {
+        weaponX = player.x - 10;
+        weaponY = player.y + player.height / 2 - 5;
+    } else if (player.lastKey === 'up') {
+        weaponX = player.x + player.width / 2 - 5;
+        weaponY = player.y - 10;
+    } else if (player.lastKey === 'down') {
+        weaponX = player.x + player.width / 2 - 5;
+        weaponY = player.y + player.height;
+    }
+    ctx.fillRect(weaponX, weaponY, 10, 10); // Taille de l'arme
 }
 
 // Dessin des obstacles
@@ -243,7 +264,9 @@ function gameLoop() {
 
     drawObstacles();
     drawPlayer(player1);
+    drawWeapon(player1);
     drawPlayer(player2);
+    drawWeapon(player2);
     movePlayers();
     moveBullets();
     checkBulletCollisions();
