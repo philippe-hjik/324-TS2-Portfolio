@@ -1,6 +1,10 @@
 # Compiled class file
 *.class
 
+# Node_modules
+node_modules
+package-lock.json
+
 # Log file
 *.log
 

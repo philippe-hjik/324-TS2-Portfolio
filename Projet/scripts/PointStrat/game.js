@@ -2,6 +2,7 @@
 
 import { checkCollision, checkObstacleCollisions } from './utils.js';
 import { updateScoreDisplay, updateTimerDisplay } from './ui.js';
+import { moveBullets, bullets } from './bullet.js';
 
 export const canvas = document.getElementById('gameCanvas');
 export const ctx = canvas.getContext('2d');
@@ -10,27 +11,16 @@ export const ctx = canvas.getContext('2d');
 export let player1 = { x: 50, y: 250, width: 20, height: 20, color: 'green', score: 0 };
 export let player2 = { x: 730, y: 250, width: 20, height: 20, color: 'brown', score: 0 };
 
-// Liste des balles et obstacles
-export let bullets = [];
 export const obstacles = [
     { x: 200, y: 150, width: 50, height: 50 },
     { x: 400, y: 300, width: 50, height: 50 },
     { x: 600, y: 100, width: 50, height: 50 }
 ];
-export const bulletSpeed = 5;
 export let timeRemaining = 90;
 export let gameOver = false; // Déclarez gameOver ici
 
 // Déclaration de l'objet keys
 export const keys = {};
-
-// Fonction de mouvement des balles
-export function moveBullets() {
-    bullets.forEach(bullet => {
-        bullet.x += bullet.direction === 'right' ? bulletSpeed : -bulletSpeed;
-    });
-    bullets = bullets.filter(bullet => bullet.x > 0 && bullet.x < canvas.width); // Retire les balles hors de l'écran
-}
 
 // Dessin des joueurs
 export function drawPlayer(player) {
