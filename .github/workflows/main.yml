@@ -87,7 +87,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+        
+      - name: Check if file exists
+        run: ls ./source/index.js
+
       - name: Install npm
         run: |
           sudo apt-get update
