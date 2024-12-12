@@ -99,4 +99,4 @@ jobs:
 
       - name: Lint JavaScript
         run: |
-          npx eslint index.js || true
+          npx eslint ./source/index.js || true
