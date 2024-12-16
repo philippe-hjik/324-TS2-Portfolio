@@ -1,0 +1,43 @@
+body {
+    font-family: 'Press Start 2P', cursive;
+    background-color: #121212;
+    color: #fff;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-size: 3em;  /* Augmenter encore la taille du titre */
+    margin-top: 80px;  /* Ajouter encore plus d'espace au-dessus du titre */
+}
+
+.navbar {
+    display: flex;
+    justify-content: center;
+    background-color: #333;
+    border: 2px solid #fff;
+    margin: 40px 0;  /* Augmenter l'espacement vertical autour de la barre de navigation */
+    padding: 20px 0;  /* Plus d'espace à l'intérieur de la barre de navigation */
+}
+
+.navbar a {
+    font-size: 1.8em;  /* Augmenter la taille des liens pour les rendre plus visibles */
+    color: #fff;
+    text-decoration: none;
+    padding: 20px 40px;  /* Plus de padding pour rendre les boutons plus larges et espacés */
+    margin: 0 15px;  /* Augmenter encore l'espacement horizontal entre les liens */
+    border: 2px solid #fff;
+    border-radius: 15px;  /* Ajouter un rayon de bordure plus large */
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.navbar a:hover {
+    background-color: #444;
+    transform: scale(1.1);
+}
+
+.navbar a:active {
+    background-color: #555;
+    transform: scale(1);
+}

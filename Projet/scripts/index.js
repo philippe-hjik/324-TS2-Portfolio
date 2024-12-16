@@ -2,10 +2,12 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
  
 // Variables du jeu
-let player1 = { x: 50, y: 250, width: 20, height: 20, color: 'green', score: 0 };
+let player1 = { x: 50, y: 250, width: 50, height: 20, color: 'green', score: 0 };
 let player2 = { x: 730, y: 250, width: 20, height: 20, color: 'brown', score: 0 };
 let bullets = [];
 const bulletSpeed = 5;
+const playerSpeed = 2;
+
 const keys = {};
 const obstacles = [
     { x: 200, y: 150, width: 50, height: 50 },
@@ -133,29 +135,29 @@ function moveBullets() {
 // Déplacement des joueurs
 function movePlayers() {
     if (keys['w'] && player1.y > 0 && !checkObstacleCollisions(player1, player1.x, player1.y - 5)) {
-        player1.y -= 5;
+        player1.y -= playerSpeed;
     }
     if (keys['s'] && player1.y < canvas.height - player1.height && !checkObstacleCollisions(player1, player1.x, player1.y + 5)) {
-        player1.y += 5;
+        player1.y += playerSpeed;
     }
     if (keys['a'] && player1.x > 0 && !checkObstacleCollisions(player1, player1.x - 5, player1.y)) {
-        player1.x -= 5;
+        player1.x -= playerSpeed;
     }
     if (keys['d'] && player1.x < canvas.width - player1.width && !checkObstacleCollisions(player1, player1.x + 5, player1.y)) {
-        player1.x += 5;
+        player1.x += playerSpeed;
     }
  
     if (keys['ArrowUp'] && player2.y > 0 && !checkObstacleCollisions(player2, player2.x, player2.y - 5)) {
-        player2.y -= 5;
+        player2.y -= playerSpeed;
     }
     if (keys['ArrowDown'] && player2.y < canvas.height - player2.height && !checkObstacleCollisions(player2, player2.x, player2.y + 5)) {
-        player2.y += 5;
+        player2.y += playerSpeed;
     }
     if (keys['ArrowLeft'] && player2.x > 0 && !checkObstacleCollisions(player2, player2.x - 5, player2.y)) {
-        player2.x -= 5;
+        player2.x -= playerSpeed;
     }
     if (keys['ArrowRight'] && player2.x < canvas.width - player2.width && !checkObstacleCollisions(player2, player2.x + 5, player2.y)) {
-        player2.x += 5;
+        player2.x += playerSpeed;
     }
 }
  

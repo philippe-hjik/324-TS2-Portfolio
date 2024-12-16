@@ -7,6 +7,9 @@ let player2 = { x: 730, y: 250, width: 30, height: 30, color: 'brown', score: 0,
 let bullets = [];
 let ammoDrops = [];
 const bulletSpeed = 15;
+const bulletHeight = 8;
+const bulletWidth = 8;
+const playerSpeed = 7;
 const maxAmmo = 30;
 const keys = {};
 let obstacles = [];
@@ -161,17 +164,17 @@ function checkPlayerCollisions() {
             // Déplacer horizontalement
             if (overlapX > 0) {
                 if (!checkObstacleCollisions(player1, player1.x + 5, player1.y) && player1.x + player1.width + 5 <= canvas.width) {
-                    player1.x += 5;
+                    player1.x += playerSpeed;
                 }
                 if (!checkObstacleCollisions(player2, player2.x - 5, player2.y) && player2.x - 5 >= 0) {
-                    player2.x -= 5;
+                    player2.x -= playerSpeed;
                 }
             } else {
                 if (!checkObstacleCollisions(player1, player1.x - 5, player1.y) && player1.x - 5 >= 0) {
-                    player1.x -= 5;
+                    player1.x -= playerSpeed;
                 }
                 if (!checkObstacleCollisions(player2, player2.x + 5, player2.y) && player2.x + player2.width + 5 <= canvas.width) {
-                    player2.x += 5;
+                    player2.x += playerSpeed;
                 }
             }
         } else {
@@ -272,36 +275,36 @@ function moveBullets() {
 // Déplacement des joueurs
 function movePlayers() {
     if (keys['w'] && player1.y > 0 && !checkObstacleCollisions(player1, player1.x, player1.y - 5)) {
-        player1.y -= 5;
+        player1.y -= playerSpeed;
         player1.lastKey = 'up';
     }
     if (keys['s'] && player1.y < canvas.height - player1.height && !checkObstacleCollisions(player1, player1.x, player1.y + 5)) {
-        player1.y += 5;
+        player1.y += playerSpeed;
         player1.lastKey = 'down';
     }
     if (keys['a'] && player1.x > 0 && !checkObstacleCollisions(player1, player1.x - 5, player1.y)) {
-        player1.x -= 5;
+        player1.x -= playerSpeed;
         player1.lastKey = 'left';
     }
     if (keys['d'] && player1.x < canvas.width - player1.width && !checkObstacleCollisions(player1, player1.x + 5, player1.y)) {
-        player1.x += 5;
+        player1.x += playerSpeed;
         player1.lastKey = 'right';
     }
 
     if (keys['ArrowUp'] && player2.y > 0 && !checkObstacleCollisions(player2, player2.x, player2.y - 5)) {
-        player2.y -= 5;
+        player2.y -= playerSpeed;
         player2.lastKey = 'up';
     }
     if (keys['ArrowDown'] && player2.y < canvas.height - player2.height && !checkObstacleCollisions(player2, player2.x, player2.y + 5)) {
-        player2.y += 5;
+        player2.y += playerSpeed;
         player2.lastKey = 'down';
     }
     if (keys['ArrowLeft'] && player2.x > 0 && !checkObstacleCollisions(player2, player2.x - 5, player2.y)) {
-        player2.x -= 5;
+        player2.x -= playerSpeed;
         player2.lastKey = 'left';
     }
     if (keys['ArrowRight'] && player2.x < canvas.width - player2.width && !checkObstacleCollisions(player2, player2.x + 5, player2.y)) {
-        player2.x += 5;
+        player2.x += playerSpeed;
         player2.lastKey = 'right';
     }
 
@@ -374,7 +377,7 @@ function gameLoop() {
 
     bullets.forEach(bullet => {
         ctx.fillStyle = bullet.owner === 'player1' ? 'green' : 'brown';
-        ctx.fillRect(bullet.x, bullet.y, 8, 8);
+        ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
     });
 
     drawTimer();
