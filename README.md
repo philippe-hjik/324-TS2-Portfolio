@@ -6,6 +6,7 @@
 ##### Visual Studio Code **Latest version**
 
 ---
+### Procédure
 
 Cloner le repos
 ```bash
