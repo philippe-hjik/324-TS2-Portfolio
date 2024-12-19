@@ -66,6 +66,8 @@ function generateRandomObstacles(count) {
 
 // Déplacement local
 function movePlayer(player) {
+    if (!player) return; // Vérifie que le joueur existe
+
     if (keys['w'] && player.y > 0 && !checkObstacleCollisions(player, player.x, player.y - playerSpeed)) {
         player.y -= playerSpeed;
         player.lastKey = 'up';
@@ -83,8 +85,8 @@ function movePlayer(player) {
         player.lastKey = 'right';
     }
 
-    // Envoyer les nouvelles coordonnées au serveur
-    if (socket) {
+    // Vérifie que la connexion est ouverte avant d'envoyer
+    if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify({
             type: 'move',
             playerId,
@@ -94,6 +96,7 @@ function movePlayer(player) {
         }));
     }
 }
+
 
 // Vérification des collisions
 function checkCollision(obj1, obj2) {
@@ -176,16 +179,17 @@ function gameLoop() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     drawObstacles();
-    drawPlayer(player1);
-    drawPlayer(player2);
+    if (player1) drawPlayer(player1);
+    if (player2) drawPlayer(player2);
     drawBullets();
     moveBullets();
 
-    if (playerId === 1) movePlayer(player1);
-    else movePlayer(player2);
+    if (playerId === 1 && player1) movePlayer(player1);
+    else if (playerId === 2 && player2) movePlayer(player2);
 
     requestAnimationFrame(gameLoop);
 }
+
 
 // Gestion des touches
 document.addEventListener('keydown', e => {
