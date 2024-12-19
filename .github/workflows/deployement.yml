@@ -28,6 +28,7 @@ jobs:
         STAGING_HOST: ${{ secrets.STAGING_HOST }}
         STAGING_USER: ${{ secrets.STAGING_USER }}
       run: |
+        ls -la
         scp -r ./Projet "${STAGING_USER}@${STAGING_HOST}:/var/www/html"
 
 # Étape 4 : Lancer l'application Node.js
