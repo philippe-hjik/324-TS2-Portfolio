@@ -28,7 +28,7 @@ jobs:
         STAGING_HOST: ${{ secrets.STAGING_HOST }}
         STAGING_USER: ${{ secrets.STAGING_USER }}
       run: |
-        scp -r ./ "${STAGING_USER}@${STAGING_HOST}:/var/www/staging"
+        scp -r ./ "${STAGING_USER}@${STAGING_HOST}:/home/azureuser"
 
     # Étape 4 : Notifier que le déploiement est terminé
     - name: Notify Deployment Success
