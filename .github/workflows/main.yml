@@ -106,3 +106,8 @@ jobs:
         working-directory: ./Projet/Source
         run: |
           npx eslint index.js || true
+
+      - name: Units Tests JavaScript
+        working-directory: ./Projet
+        run: |
+          npm test
