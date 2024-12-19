@@ -6,6 +6,7 @@
 ##### Visual Studio Code **Latest version**
 
 ---
+### Procédure
 
 Cloner le repos
 ```bash
@@ -18,4 +19,5 @@ cd Projet/pages
 ```
 
 Lancer *Live Server* en cliquant sur **index.html**
-![[liveServer.png.png]]
+
+![images](./images/liveServer.png)
