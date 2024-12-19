@@ -37,11 +37,9 @@ jobs:
         STAGING_USER: ${{ secrets.STAGING_USER }}
       run: |
         ssh "${STAGING_USER}@${STAGING_HOST}" << 'EOF'
-          cd /home/"${STAGING_USER}"/Projet
+          cd /var/www/html
           npm install # Installe les dépendances (si nécessaire)
-          pm2 start server.js --name staging-app || pm2 restart staging-app # Démarre ou redémarre l'application
-          pm2 save # Sauvegarde l'état de PM2
-        EOF
+        
 
     # Étape 5 : Notifier que le déploiement est terminé
     - name: Notify Deployment Success
