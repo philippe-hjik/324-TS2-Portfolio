@@ -14,40 +14,32 @@ function getClientIp(req) {
 // Gérer les connexions entrantes
 wss.on('connection', (ws, req) => {
     const clientIp = getClientIp(req); // Récupérer l'adresse IP du client
-    console.log(`Un joueur s'est connecté depuis ${clientIp}.`);
+    console.log(`Connexion établie depuis ${clientIp}.`);
 
-    // Refuser la connexion si le serveur est plein
+    // Refuser la connexion si deux joueurs sont déjà connectés
     if (players.length >= 2) {
-        console.log(`Un joueur avec l'adresse IP ${clientIp} a tenté de se connecter, mais le serveur est plein.`);
+        console.log(`Connexion refusée pour ${clientIp} : le serveur est plein.`);
         ws.send(JSON.stringify({ type: 'error', message: 'Le serveur est plein. Veuillez réessayer plus tard.' }));
         ws.close();
         return;
     }
 
-    // Vérifier si un joueur avec la même IP est déjà connecté
-    if (players.some(player => player.ip === clientIp)) {
-        console.log(`Un joueur avec l'adresse IP ${clientIp} est déjà connecté. Déconnexion.`);
-        ws.close();
-        return;
-    }
+    // Assigner le rôle au joueur
+    const playerId = players.length + 1; // 1 pour joueur vert, 2 pour joueur rouge
+    const playerRole = playerId === 1 ? 'green' : 'red';
+    players.push({ ws, ip: clientIp, id: playerId, role: playerRole });
 
-    // Ajouter le joueur à la liste
-    players.push({ ws, ip: clientIp });
+    console.log(`Joueur ${playerRole} (ID: ${playerId}) connecté depuis ${clientIp}.`);
 
-    // Vérifier si deux joueurs distincts sont connectés
+    // Informer le joueur de son rôle
+    ws.send(JSON.stringify({ type: 'assignRole', playerId, role: playerRole }));
+
+    // Vérifier si les deux joueurs sont connectés pour démarrer le jeu
     if (players.length === 2) {
-        console.log('Deux joueurs distincts connectés. Le jeu peut démarrer.');
-
-        // Informer les deux joueurs que le jeu commence
-        players.forEach((player, index) => {
-            player.ws.send(JSON.stringify({
-                type: 'start',
-                playerId: index + 1, // Assigner un ID unique à chaque joueur
-            }));
-            console.log(`Message "start" envoyé au joueur ${index + 1} (${player.ip}).`);
+        console.log('Deux joueurs connectés. Le jeu peut démarrer.');
+        players.forEach(player => {
+            player.ws.send(JSON.stringify({ type: 'start', message: 'Le jeu commence maintenant !' }));
         });
-    } else {
-        ws.send(JSON.stringify({ type: 'waiting', message: 'En attente d\'un autre joueur.' }));
     }
 
     // Gérer les messages reçus d'un client
@@ -55,15 +47,8 @@ wss.on('connection', (ws, req) => {
         try {
             const data = JSON.parse(message);
 
-            if (!data.type) {
-                console.warn('Message invalide reçu.');
-                return;
-            }
-
-            console.log(`Message reçu du joueur ${clientIp}:`, data);
-
-            // Réenvoyer le message à l'autre joueur
-            players.forEach((player) => {
+            // Diffuser les actions du joueur à l'autre joueur
+            players.forEach(player => {
                 if (player.ws !== ws && player.ws.readyState === WebSocket.OPEN) {
                     player.ws.send(JSON.stringify(data));
                 }
@@ -75,11 +60,11 @@ wss.on('connection', (ws, req) => {
 
     // Gérer la déconnexion d'un joueur
     ws.on('close', () => {
-        console.log(`Un joueur avec l'adresse IP ${clientIp} s'est déconnecté.`);
+        console.log(`Déconnexion de ${clientIp} (${playerRole}).`);
         players = players.filter(player => player.ws !== ws);
 
+        // Informer le joueur restant qu'il attend un nouveau joueur
         if (players.length < 2) {
-            console.log('En attente d\'un nouveau joueur...');
             players.forEach(player => {
                 player.ws.send(JSON.stringify({ type: 'waiting', message: 'En attente d\'un autre joueur.' }));
             });
@@ -88,7 +73,7 @@ wss.on('connection', (ws, req) => {
 
     // Gérer les erreurs
     ws.on('error', (error) => {
-        console.error(`Erreur WebSocket avec l'adresse IP ${clientIp} :`, error);
+        console.error(`Erreur WebSocket avec ${clientIp} (${playerRole}) :`, error);
     });
 });
 

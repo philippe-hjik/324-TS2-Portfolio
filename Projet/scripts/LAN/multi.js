@@ -11,6 +11,7 @@ let players = {
 };
 
 let bullets = [];
+let obstacles = [];
 let keys = {};
 const playerSpeed = 7;
 const bulletSpeed = 15;
@@ -27,7 +28,7 @@ function connectToServer() {
     socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
 
-        if (message.type === 'assignPlayer') {
+        if (message.type === 'assignRole') {
             playerId = message.playerId; // Le serveur assigne un ID au joueur
             console.log(`Vous êtes le joueur ${playerId}.`);
         }
@@ -35,9 +36,10 @@ function connectToServer() {
         if (message.type === 'updateState') {
             players = message.players; // Synchronisez l'état des joueurs
             bullets = message.bullets; // Synchronisez les balles
+            obstacles = message.obstacles; // Synchronisez les obstacles
         }
 
-        if (message.type === 'startGame') {
+        if (message.type === 'start') {
             console.log('Le jeu commence !');
         }
     };
@@ -50,6 +52,24 @@ function connectToServer() {
 function drawPlayer(player) {
     ctx.fillStyle = player.color;
     ctx.fillRect(player.x, player.y, player.width, player.height);
+}
+
+// Dessiner les balles
+function drawBullets() {
+    ctx.fillStyle = 'black';
+    bullets.forEach((bullet) => {
+        ctx.fillRect(bullet.x, bullet.y, 10, 10);
+    });
+}
+
+// Dessiner les obstacles
+function drawObstacles() {
+    ctx.fillStyle = 'gray';
+    obstacles.forEach(obstacle => {
+        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        ctx.strokeStyle = 'black';
+        ctx.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+    });
 }
 
 // Déplacer les joueurs localement
@@ -72,20 +92,23 @@ function movePlayers() {
     }));
 }
 
-// Dessiner les balles
-function drawBullets() {
-    ctx.fillStyle = 'black';
-    bullets.forEach((bullet) => {
-        ctx.fillRect(bullet.x, bullet.y, 10, 10);
-    });
+// Gestion des collisions entre le joueur et les obstacles
+function checkObstacleCollisions(player) {
+    return obstacles.some(obstacle =>
+        player.x < obstacle.x + obstacle.width &&
+        player.x + player.width > obstacle.x &&
+        player.y < obstacle.y + obstacle.height &&
+        player.y + player.height > obstacle.y
+    );
 }
 
 // Boucle principale du jeu
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    Object.values(players).forEach(drawPlayer);
-    drawBullets();
+    drawObstacles(); // Dessiner les obstacles
+    Object.values(players).forEach(drawPlayer); // Dessiner les joueurs
+    drawBullets(); // Dessiner les balles
 
     movePlayers();
 
