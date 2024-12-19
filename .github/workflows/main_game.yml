@@ -22,9 +22,8 @@ jobs:
           node-version: '20.x'
 
       - name: npm install, build, and test
-        working-directory: ./
+        working-directory: ./Projet
         run: |
-          ls -la
           npm install
           npm run build --if-present
           npm run test --if-present
