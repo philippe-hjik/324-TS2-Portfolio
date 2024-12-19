@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu Multijoueur 1v1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../Style/style.css">
+</head>
+<body>
+    <h1>Jeu Multijoueur 1v1</h1>
+    <div id="scoreboard">
+        <div class="score player-green">
+            <p>Score Joueur Vert: <span id="scorePlayer1">0</span></p>
+        </div>
+        <div class="time">
+            <p>Temps restant: <span id="timerDisplay">1:30</span></p>
+        </div>
+        <div class="score player-red">
+            <p>Score Joueur Rouge: <span id="scorePlayer2">0</span></p>
+        </div>
+    </div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script type="module" src="../scripts//LAN/multi.js"></script>
+</body>
+</html>
