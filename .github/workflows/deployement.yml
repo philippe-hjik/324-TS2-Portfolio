@@ -30,7 +30,20 @@ jobs:
       run: |
         scp -r ./ "${STAGING_USER}@${STAGING_HOST}:/home/azureuser"
 
-    # Étape 4 : Notifier que le déploiement est terminé
+# Étape 4 : Lancer l'application Node.js
+    - name: Start Node.js Application
+      env:
+        STAGING_HOST: ${{ secrets.STAGING_HOST }}
+        STAGING_USER: ${{ secrets.STAGING_USER }}
+      run: |
+        ssh "${STAGING_USER}@${STAGING_HOST}" << 'EOF'
+          cd /home/"${STAGING_USER}"/Projet
+          npm install # Installe les dépendances (si nécessaire)
+          pm2 start server.js --name staging-app || pm2 restart staging-app # Démarre ou redémarre l'application
+          pm2 save # Sauvegarde l'état de PM2
+        EOF
+
+    # Étape 5 : Notifier que le déploiement est terminé
     - name: Notify Deployment Success
       if: success()
-      run: echo "Deployment to staging completed successfully!"
+      run: echo "Deployment to staging completed and app started successfully!"
