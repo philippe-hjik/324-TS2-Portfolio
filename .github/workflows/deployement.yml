@@ -22,13 +22,13 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.STAGING_HOST }} >> ~/.ssh/known_hosts
 
-    # Étape 3 : Copier les fichiers sur le serveur avec SCP
+    # Étape 3 : Copier les fichiers sur le service Apache
     - name: Deploy files to Staging
       env:
         STAGING_HOST: ${{ secrets.STAGING_HOST }}
         STAGING_USER: ${{ secrets.STAGING_USER }}
       run: |
-        scp -r ./ "${STAGING_USER}@${STAGING_HOST}:/home/azureuser"
+        scp -r ./Projet "${STAGING_USER}@${STAGING_HOST}:/var/www/html"
 
 # Étape 4 : Lancer l'application Node.js
     - name: Start Node.js Application
