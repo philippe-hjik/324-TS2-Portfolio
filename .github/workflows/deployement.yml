@@ -17,6 +17,7 @@ jobs:
     # Étape 2 : Configurer la clé SSH pour la connexion au serveur
     - name: Set up SSH
       run: |
+        mkdir -p ~/.ssh # Crée le répertoire ~/.ssh s'il n'existe pas
         echo "${{ secrets.STAGING_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.STAGING_HOST }} >> ~/.ssh/known_hosts
