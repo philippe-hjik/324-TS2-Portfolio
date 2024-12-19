@@ -18,4 +18,5 @@ cd Projet/pages
 ```
 
 Lancer *Live Server* en cliquant sur **index.html**
-![[liveServer.png.png]]
+
+![images](./images/liveServer.png)
