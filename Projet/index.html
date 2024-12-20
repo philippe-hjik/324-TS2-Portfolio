@@ -1,20 +1,115 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
-     <link rel="stylesheet" href="./Style/StyleMenu.css">
-</head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeu 1v1</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    
+    <title>Jeu Multijoueur</title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        #gameCanvas {
+            border: 1px solid black;
+            margin-top: 20px;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Choix du mode</h1>
-    <div class="navbar">
-        <a href="./pages/local.html">Local</a>
-        <a href="./pages/pointStrat.html">Point Stratégique</a>
-        <a href="./pages/LAN.html">MultiJoueur</a>
-    </div>
+    <h1>Jeu Multijoueur - Joueur</h1>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const context = canvas.getContext('2d');
+
+        // Créer la connexion WebSocket
+        const socket = new WebSocket('ws://172.161.56.62:8080');  // Remplace <IP_PUBLIC_DU_SERVEUR> par l'IP publique du serveur
+
+        // Quand la connexion WebSocket est établie
+        socket.onopen = () => {
+            console.log('Connexion WebSocket établie');
+        };
+
+        // Quand un message est reçu (position de l'autre joueur ou joueurs existants)
+        socket.onmessage = (event) => {
+            if (typeof event.data === 'string') {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.player) {
+                        // Si c'est la position d'un joueur existant, on met à jour la position
+                        updateGameState(data);
+                    }
+                } catch (error) {
+                    console.error('Erreur lors du traitement du message:', error);
+                }
+            } else {
+                console.warn('Message reçu n\'est pas une chaîne JSON, type reçu:', typeof event.data);
+            }
+        };
+
+        // Quand la connexion WebSocket est fermée
+        socket.onclose = () => {
+            console.log('Connexion WebSocket fermée');
+        };
+
+        // Quand une erreur WebSocket survient
+        socket.onerror = (error) => {
+            console.error('Erreur WebSocket:', error);
+        };
+
+        // Variables pour les joueurs
+        let player = { x: 50, y: 100, color: 'blue' };  // Joueur local
+        let otherPlayer = { x: 200, y: 100, color: 'red' };  // L'autre joueur
+
+        // Envoie de la position du joueur au serveur
+        function sendPosition() {
+            const message = {
+                player: {
+                    x: player.x,
+                    y: player.y
+                }
+            };
+            socket.send(JSON.stringify(message));
+        }
+
+        // Mise à jour des positions des joueurs
+        function updateGameState(data) {
+            otherPlayer.x = data.player.x;
+            otherPlayer.y = data.player.y;
+
+            drawGame();
+        }
+
+        // Dessin des joueurs
+        function drawGame() {
+            context.clearRect(0, 0, canvas.width, canvas.height);  // Effacer le canvas
+            context.beginPath();
+            context.arc(player.x, player.y, 10, 0, 2 * Math.PI);  // Dessiner le joueur local
+            context.fillStyle = player.color;
+            context.fill();
+
+            context.beginPath();
+            context.arc(otherPlayer.x, otherPlayer.y, 10, 0, 2 * Math.PI);  // Dessiner l'autre joueur
+            context.fillStyle = otherPlayer.color;
+            context.fill();
+        }
+
+        // Déplacement du joueur local avec les flèches du clavier
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowUp') player.y -= 5;
+            if (event.key === 'ArrowDown') player.y += 5;
+            if (event.key === 'ArrowLeft') player.x -= 5;
+            if (event.key === 'ArrowRight') player.x += 5;
+
+            sendPosition();  // Envoi des nouvelles positions au serveur
+            drawGame();  // Mise à jour de l'affichage
+        });
+
+        // Initialiser l'affichage
+        drawGame();
+    </script>
 </body>
+
 </html>

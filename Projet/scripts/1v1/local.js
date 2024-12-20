@@ -6,10 +6,13 @@ socket.onopen = () => {
     console.log('Connexion WebSocket établie.');
 };
 
-// Lorsque le serveur envoie une mise à jour de l'état du jeu, on l'applique
+// Quand un message est reçu (position de l'autre joueur ou joueurs existants)
 socket.onmessage = (event) => {
-    const gameState = JSON.parse(event.data);
-    updateGameState(gameState); // Met à jour le jeu avec les données du serveur
+    const data = JSON.parse(event.data);
+    if (data.player) {
+        // Si c'est la position d'un joueur existant, on met à jour la position
+        updateGameState(data);
+    }
 };
 
 // Lorsqu'une erreur se produit
@@ -28,6 +31,7 @@ function sendGameState(state) {
     }
 }
 
+
 // Exemple de fonction pour envoyer l'état du jeu (ici, les mouvements des joueurs, etc.)
 function updateGameState(state) {
     // Mettez à jour l'état du jeu (position des joueurs, score, etc.) en fonction de l'état reçu
@@ -37,6 +41,23 @@ function updateGameState(state) {
     player2.y = state.player2.y;
 
     // Ajoutez toute autre mise à jour de l'état ici
+}
+
+
+// Variables pour les joueurs
+let player = { x: 50, y: 100, color: 'blue' };  // Joueur local
+let otherPlayer = { x: 200, y: 100, color: 'red' };  // L'autre joueur
+
+
+// Envoie de la position du joueur au serveur
+function sendPosition() {
+    const message = {
+        player: {
+            x: player.x,
+            y: player.y
+        }
+    };
+    socket.send(JSON.stringify(message));
 }
 
 const canvas = document.getElementById('gameCanvas');
@@ -75,7 +96,7 @@ function generateRandomObstacles(count) {
 }
 
 // Timer
-let timeRemaining = 25;
+let timeRemaining = 250;
 let gameOver = false;
 
 // Dessin des joueurs
