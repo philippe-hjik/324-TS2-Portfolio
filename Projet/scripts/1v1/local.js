@@ -1,3 +1,44 @@
+// Créer une connexion WebSocket au serveur
+const socket = new WebSocket('ws://172.161.56.62:8080');
+
+// Lorsque le WebSocket est ouvert, envoyez un message pour signaler la connexion
+socket.onopen = () => {
+    console.log('Connexion WebSocket établie.');
+};
+
+// Lorsque le serveur envoie une mise à jour de l'état du jeu, on l'applique
+socket.onmessage = (event) => {
+    const gameState = JSON.parse(event.data);
+    updateGameState(gameState); // Met à jour le jeu avec les données du serveur
+};
+
+// Lorsqu'une erreur se produit
+socket.onerror = (error) => {
+    console.error('Erreur WebSocket:', error);
+};
+
+// Lorsqu'une connexion est fermée
+socket.onclose = () => {
+    console.log('Connexion WebSocket fermée.');
+};
+
+function sendGameState(state) {
+    if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(state)); // Envoie l'état actuel du jeu
+    }
+}
+
+// Exemple de fonction pour envoyer l'état du jeu (ici, les mouvements des joueurs, etc.)
+function updateGameState(state) {
+    // Mettez à jour l'état du jeu (position des joueurs, score, etc.) en fonction de l'état reçu
+    player1.x = state.player1.x;
+    player1.y = state.player1.y;
+    player2.x = state.player2.x;
+    player2.y = state.player2.y;
+
+    // Ajoutez toute autre mise à jour de l'état ici
+}
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -314,6 +355,13 @@ function movePlayers() {
     // Vérification des ramassages de cartouches
     checkAmmoPickup(player1);
     checkAmmoPickup(player2);
+
+    // Après le déplacement, on envoie l'état du jeu au serveur
+    sendGameState({
+        player1: { x: player1.x, y: player1.y, score: player1.score, ammo: player1.ammo },
+        player2: { x: player2.x, y: player2.y, score: player2.score, ammo: player2.ammo },
+        // Inclure d'autres informations pertinentes
+    });
 }
 
 // Fonction pour tirer des balles
@@ -400,6 +448,16 @@ setInterval(spawnAmmoDrop, 5000);
 
 // Lancer le timer
 setInterval(updateTimer, 1000);
+
+// Sur le client, envoi du timer toutes les secondes
+setInterval(() => {
+    sendGameState({
+        timer: timeRemaining,
+        player1: { x: player1.x, y: player1.y },
+        player2: { x: player2.x, y: player2.y }
+        // Autres données du jeu à partager
+    });
+}, 1000);
 
 // Démarrage du jeu
 gameLoop();
