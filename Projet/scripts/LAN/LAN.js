@@ -1,42 +1,78 @@
-document.getElementById('connectBtn').addEventListener('click', () => {
-    const serverIp = document.getElementById('serverIp').value;
-    const serverPort = document.getElementById('serverPort').value;
+let socket;
+let isConnected = false; // Indicateur pour vérifier l'état de la connexion
+let reconnectTimeout; // Déclarer reconnectTimeout pour gérer la reconnexion
 
-    if (!serverIp || !serverPort) {
-        alert('Veuillez entrer une adresse IP et un port.');
-        return;
-    }
-
-    const serverAddress = `ws://${serverIp}:${serverPort}`;
-    const socket = new WebSocket(serverAddress);
+// Fonction pour établir la connexion WebSocket
+function connectWebSocket() {
+    socket = new WebSocket('wss://my-websocket-eqd8byb2bzbvg9cg.switzerlandnorth-01.azurewebsites.net'); // Remplacez l'URL par celle de votre serveur
 
     socket.onopen = () => {
-        document.getElementById('connectionStatus').textContent = 'Statut : Connecté';
-        socket.send(JSON.stringify({ type: 'join' }));
-        console.log('Connexion établie. En attente d’un autre joueur...');
+        console.log("Connexion WebSocket réussie !");
+        isConnected = true; // Marquer la connexion comme ouverte
+    };
+
+    socket.onclose = () => {
+        console.log("Connexion WebSocket fermée. Tentative de reconnexion...");
+        clearTimeout(reconnectTimeout); // Assurez-vous de nettoyer l'ancien délai de reconnexion
+        reconnectTimeout = setTimeout(connectWebSocket, 5000); // Reconnexion après 5 secondes
+        isConnected = false;
+    };
+
+    socket.onerror = (error) => {
+        console.error("Erreur WebSocket :", error);
     };
 
     socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
+        console.log("Message reçu du serveur :", message);
 
-        if (message.type === 'assignRole') {
-            sessionStorage.setItem('playerRole', message.role);
-            sessionStorage.setItem('serverAddress', serverAddress);
-            console.log(`Vous êtes le joueur ${message.role}.`);
+        // Afficher le message de bienvenue
+        if (message.type === 'welcome') {
+            alert(message.message); // Affiche le message de bienvenue
         }
 
-        if (message.type === 'start') {
-            alert('Le jeu commence !');
-            window.location.href = './multi.html';
+        if (message.type === 'gameList') {
+            const gameListElement = document.getElementById('gameList');
+            gameListElement.innerHTML = ''; // Réinitialiser la liste des parties
+
+            message.games.forEach(game => {
+                const li = document.createElement('li');
+                li.textContent = `Salle: ${game} (Code)`;
+                gameListElement.appendChild(li);
+            });
+        }
+
+        if (message.type === 'gameCreated') {
+            alert(`La partie a été créée avec le code : ${message.roomCode}`);
+        }
+
+        if (message.type === 'gameStarted') {
+            alert(`Vous avez rejoint la partie avec le code : ${message.roomCode}`);
+        }
+
+        if (message.type === 'error') {
+            alert(message.message);
         }
     };
+}
 
-    socket.onerror = (error) => {
-        console.error('Erreur WebSocket :', error);
-        alert('Erreur de connexion au serveur.');
-    };
+connectWebSocket(); // Appeler pour initialiser la connexion
 
-    socket.onclose = () => {
-        document.getElementById('connectionStatus').textContent = 'Statut : Déconnecté';
-    };
+// Créer une partie (avec vérification de la connexion avant d'envoyer le message)
+document.getElementById('createGameBtn').addEventListener('click', () => {
+    if (isConnected) {
+        socket.send(JSON.stringify({ type: 'createGame' }));
+    } else {
+        console.error("WebSocket n'est pas encore connecté. Réessayez plus tard.");
+    }
+});
+
+// Rejoindre une partie (avec vérification de la connexion avant d'envoyer le message)
+document.getElementById('joinGameBtn').addEventListener('click', () => {
+    const roomCode = document.getElementById('roomCode').value;
+    if (roomCode && isConnected) {
+        socket.send(JSON.stringify({ type: 'joinGame', roomCode }));
+    } else {
+        console.error("WebSocket n'est pas encore connecté ou le code de salle est manquant.");
+    }
 });

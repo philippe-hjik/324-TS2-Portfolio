@@ -8,17 +8,33 @@
     <link rel="stylesheet" href="../Style/style.css">
 </head>
 <body>
+
     <h1>Connexion LAN</h1>
-    <div class="form-container">
-        <label for="serverIp">Adresse IP du serveur :</label>
-        <input type="text" id="serverIp" placeholder="Exemple : 192.168.1.10">
-        <label for="serverPort">Port du serveur :</label>
-        <input type="text" id="serverPort" placeholder="Exemple : 3000">
-        <button id="connectBtn">Se connecter</button>
+
+    <div id="game-container">
+        <h2>Parties disponibles</h2>
+
+        <div class="form-container">
+            <button id="createGameBtn">Créer une partie</button>
+
+            <!-- Input pour spécifier le code de la salle lors de la création -->
+            <input type="text" id="createRoomCode" placeholder="Entrez votre code personnalisé pour la salle">
+            
+            <input type="text" id="roomCode" placeholder="Entrez le code de la salle pour rejoindre">
+            
+            <button id="joinGameBtn">Rejoindre une partie</button>
+        </div>
+
+        <h3>Liste des parties</h3>
+        <ul id="gameList">
+            <!-- La liste des parties sera générée dynamiquement ici -->
+        </ul>
+
+        <div id="status">
+            Status: <span id="connectionStatus">Non connecté</span>
+        </div>
     </div>
-    <div id="status" style="margin-top: 20px;">
-        <p>Status : <span id="connectionStatus">Non connecté</span></p>
-    </div>
-    <script type="module" src="../scripts/LAN/LAN.js"></script>
+
+    <script src="../scripts/LAN/LAN.js"></script>
 </body>
 </html>

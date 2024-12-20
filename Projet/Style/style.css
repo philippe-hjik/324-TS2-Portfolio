@@ -1,3 +1,4 @@
+/* Global Styles */
 body {
     font-family: 'Press Start 2P', cursive;
     background-color: #121212;
@@ -14,91 +15,109 @@ h1 {
     margin-top: 20px;
 }
 
+/* Game Container */
 #game-container {
     margin: 20px auto;
-    width: 80%;
+    width: 90%;
+    max-width: 1000px;
     background-color: #222;
-    padding: 10px;
+    padding: 20px;
     border: 2px solid #fff;
     border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.8); /* Ombre pour l'effet de profondeur */
 }
 
-#map {
-    position: relative;
-    width: 800px;
-    height: 400px;
-    background-color: #444;
+#game-container h2 {
+    font-size: 2em;
+    color: #ffcc00;
+    margin-bottom: 20px;
+}
+
+/* Partie et tableau des parties disponibles */
+#gameList {
+    list-style: none;
+    padding: 0;
     margin: 20px auto;
-    border: 2px solid #fff;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.8); /* Ombre pour l'effet de profondeur */
+    max-width: 500px;
 }
 
-#scoreboard {
-    display: flex;
-    justify-content: space-around;
-    font-size: 20px;
-    margin-top: 20px;
+#gameList li {
     background-color: #333;
-    padding: 10px;
+    color: #fff;
+    padding: 15px;
+    margin-bottom: 10px;
     border-radius: 5px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); /* Ombre légère autour du tableau des scores */
-    align-items: center;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-#scoreboard div {
-    font-size: 18px;
+#gameList li:hover {
+    background-color: #444;
+}
+
+#gameList li.active {
+    background-color: #555;
+}
+
+/* Buttons */
+button {
+    font-size: 1.2em;
     color: #fff;
+    background-color: #ffcc00;
+    border: 2px solid #ffcc00;
+    border-radius: 5px;
+    padding: 15px 30px;
+    margin: 20px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
 }
 
-#scoreboard .player-green {
-    color: #00ff00; /* Vert pour le joueur vert */
+button:hover {
+    background-color: #ff9900;
+    transform: scale(1.05);
 }
 
-#scoreboard .player-red {
-    color: #ff0000; /* Rouge pour le joueur rouge */
+button:active {
+    background-color: #cc7a00;
+    transform: scale(1);
 }
 
-#scoreboard .time {
+/* Form */
+.form-container {
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    font-size: 1em;
+    width: 100%;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 2px solid #ccc;
+    background-color: #222;
     color: #fff;
-    font-size: 18px;
-    margin: 0 20px;
+    transition: border-color 0.3s;
 }
 
-#ammo-container {
-    display: flex;
-    justify-content: space-evenly;
-    margin-top: 20px; /* Espacement vertical entre les éléments */
+input[type="text"]:focus {
+    border-color: #ffcc00;
+    outline: none;
 }
 
-.ammo {
-    font-size: 18px;
-    color: #fff;
-    margin-top: 10px; /* Espacement vertical supplémentaire */
+/* Status & Error Messages */
+#status {
+    font-size: 1.2em;
+    color: #ffcc00;
+    margin-top: 20px;
 }
 
-.ammo.player-green {
-    color: #00ff00;
-}
-
-.ammo.player-red {
+.error {
     color: #ff0000;
 }
 
-canvas {
-    background-color: #333;
-    border: 2px solid #fff;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7); /* Ombre pour l'effet de profondeur */
-}
-
-.player {
-    border: 2px solid #fff;
-    border-radius: 5px;
-    transition: left 0.1s, top 0.1s; /* Animation fluide des mouvements */
-    box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5); /* Légère lueur autour du joueur */
-}
-
+/* Navbar */
 .navbar {
     display: flex;
     justify-content: center;
@@ -127,4 +146,20 @@ canvas {
 .navbar a:active {
     background-color: #555;
     transform: scale(1);
+}
+
+/* Responsive Layout */
+@media (max-width: 768px) {
+    #game-container {
+        width: 95%;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px 0;
+    }
+
+    #gameList {
+        width: 100%;
+    }
 }
