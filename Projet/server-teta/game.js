@@ -49,6 +49,9 @@ function render() {
     for (const id in players) {
         const player = players[id];
         ctx.fillStyle = id === playerId ? 'blue' : 'red';
-        ctx.fillRect(player.x, player.y, 20, 20);
+        ctx.fillRect(player.x, player.y, 30, 30);
+
+        ctx.strokeStyle = 'black';
+        ctx.strokeRect(player.x, player.y, 30, 30);
     }
 }
