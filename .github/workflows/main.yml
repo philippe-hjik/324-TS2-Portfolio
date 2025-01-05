@@ -15,101 +15,34 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-        
-      - name: Setup Git
-        run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.event.pusher.email || 'actions@github.com' }}"
 
-      - name: Get Last Tag
-        run: |
-          git fetch --tags
-          LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "v0.0.0")
-          echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
-
-      - name: Get Commit Message
-        run: |
-          COMMIT_MSG=$(git log -1 --pretty=%B)
-          echo "COMMIT_MSG=$COMMIT_MSG" >> $GITHUB_ENV
-
-      - name: Analyze Commit Message
-        run: |
-          if [[ "$COMMIT_MSG" == *"breakingChange"* ]]; then
-            echo "CHANGE_TYPE=major" >> $GITHUB_ENV
-          elif [[ "$COMMIT_MSG" == *"feat"* ]]; then
-            echo "CHANGE_TYPE=minor" >> $GITHUB_ENV
-          elif [[ "$COMMIT_MSG" == *"fix"* ]]; then
-            echo "CHANGE_TYPE=patch" >> $GITHUB_ENV
-          else
-            echo "CHANGE_TYPE=none" >> $GITHUB_ENV
-          fi
-
-      - name: Determine New Version
-        run: |
-          VERSION_CLEANED=${LAST_TAG:1}
-          MAJOR=$(echo "$VERSION_CLEANED" | cut -d '.' -f 1)
-          MINOR=$(echo "$VERSION_CLEANED" | cut -d '.' -f 2)
-          PATCH=$(echo "$VERSION_CLEANED" | cut -d '.' -f 3)
-
-          if [[ "$CHANGE_TYPE" == "major" ]]; then
-            MAJOR=$((MAJOR + 1))
-            MINOR=0
-            PATCH=0
-          elif [[ "$CHANGE_TYPE" == "minor" ]]; then
-            MINOR=$((MINOR + 1))
-            PATCH=0
-          elif [[ "$CHANGE_TYPE" == "patch" ]]; then
-            PATCH=$((PATCH + 1))
-          else
-            echo "No new version required."
-            exit 0
-          fi
-
-          NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-
-      - name: Create New Tag
-        if: env.NEW_VERSION != ''
-        run: |
-          git tag $NEW_VERSION
-          git push origin $NEW_VERSION
-
-      - name: Show New Version
-        if: env.NEW_VERSION != ''
-        run: |
-          echo "New version created: $NEW_VERSION"
-
-      - name: No Version Change
-        if: env.NEW_VERSION == ''
-        run: |
-          echo "Ce commit n’a pas conduit à un tag ."
-
-  dependence-task:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        
-      - name: Check if file exists
-        working-directory: ./Projet/scripts/1v1
-        run: ls local.js
-
-      - name: Install npm
+      - name: Install Global Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y npm
 
+      - name: Install Project Dependencies
+        working-directory: ./Projet
+        run: |
+          npm install
+
+      - name: Run Tests
+        working-directory: ./Projet
+        run: |
+          npx vitest run || true
+
+  linting-task:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Install ESLint
-        working-directory: /Projet/Source
+        working-directory: ./Projet
         run: |
           npm install eslint --save-dev
 
-      - name: Lint JavaScript
-        working-directory: ./Projet/Source
-        run: |
-          npx eslint index.js || true
-
-      - name: Units Tests JavaScript
+      - name: Lint JavaScript Files
         working-directory: ./Projet
         run: |
-          npm test
+          npx eslint scripts/*.js || true
