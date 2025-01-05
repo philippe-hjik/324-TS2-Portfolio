@@ -110,10 +110,10 @@ jobs:
         run: |
           npm install eslint --save-dev
 
-      - name: Lint JavaScript Files
-        working-directory: ./Projet
+      - name: Lint JavaScript Files in 1v1
+        working-directory: ./Projet/scripts/1v1
         run: |
-          npx eslint scripts/*.js || true
+          npx eslint . --ext .js || true
 
       - name: Run Tests
         working-directory: ./Projet
