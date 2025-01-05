@@ -113,7 +113,7 @@ jobs:
       - name: Lint JavaScript Files in 1v1
         working-directory: ./Projet/scripts/1v1
         run: |
-          npx eslint . --ext .js || true
+          npx eslint . || true
 
       - name: Run Tests
         working-directory: ./Projet
