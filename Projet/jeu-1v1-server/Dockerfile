@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Copier les fichiers nécessaires
 COPY package*.json ./
+
 COPY server.js ./
 
 # Installer les dépendances
