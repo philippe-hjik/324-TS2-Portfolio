@@ -29,16 +29,16 @@ function movePlayer(dx, dy) {
 document.addEventListener('keydown', (event) => {
     switch (event.key) {
         case 'ArrowUp':
-            movePlayer(0, -10);
+            movePlayer(0, -5);
             break;
         case 'ArrowDown':
-            movePlayer(0, 10);
+            movePlayer(0, 5);
             break;
         case 'ArrowLeft':
-            movePlayer(-10, 0);
+            movePlayer(-5, 0);
             break;
         case 'ArrowRight':
-            movePlayer(10, 0);
+            movePlayer(5, 0);
             break;
     }
 });
