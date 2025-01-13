@@ -13,6 +13,7 @@ const playerSpeed = 7;
 const maxAmmo = 30;
 const keys = {};
 let obstacles = [];
+let stars = [];
 
 // Génération aléatoire des obstacles
 function generateRandomObstacles(count) {
@@ -79,7 +80,7 @@ function drawObstacles() {
 
 // Dessin des cartouches
 function drawAmmoDrops() {
-    ctx.fillStyle = 'yellow';
+    ctx.fillStyle = 'lightblue';
     ammoDrops.forEach(drop => {
         ctx.fillRect(drop.x, drop.y, 10, 15);
     });
@@ -251,25 +252,20 @@ function updateAmmoDisplay() {
     document.getElementById('ammoPlayer2').textContent = player2.ammo;
 }
 
-// Déplacement des balles
 function moveBullets() {
     bullets.forEach(bullet => {
         switch (bullet.direction) {
-            case 'right':
-                bullet.x += bulletSpeed;
-                break;
-            case 'left':
-                bullet.x -= bulletSpeed;
-                break;
-            case 'up':
-                bullet.y -= bulletSpeed;
-                break;
-            case 'down':
-                bullet.y += bulletSpeed;
-                break;
+            case 'right': bullet.x += bulletSpeed; break;
+            case 'left': bullet.x -= bulletSpeed; break;
+            case 'up': bullet.y -= bulletSpeed; break;
+            case 'down': bullet.y += bulletSpeed; break;
+            case 'upright': bullet.x += bulletSpeed; bullet.y -= bulletSpeed; break;
+            case 'upleft': bullet.x -= bulletSpeed; bullet.y -= bulletSpeed; break;
+            case 'downright': bullet.x += bulletSpeed; bullet.y += bulletSpeed; break;
+            case 'downleft': bullet.x -= bulletSpeed; bullet.y += bulletSpeed; break;
         }
     });
-    bullets = bullets.filter(bullet => bullet.x > 0 && bullet.x < canvas.width && bullet.y > 0 && bullet.y < canvas.height); // Retire les balles hors de l'écran
+    bullets = bullets.filter(bullet => bullet.x > 0 && bullet.x < canvas.width && bullet.y > 0 && bullet.y < canvas.height);
 }
 
 // Déplacement des joueurs
@@ -335,6 +331,76 @@ function reloadPage() {
     location.reload();
 }
 
+function drawStars() {
+    ctx.fillStyle = 'gold';
+    stars.forEach(star => {
+        drawStar(ctx, star.x + 10, star.y + 10, 5, 10, 5);
+    });
+}
+
+// Fonction utilitaire pour dessiner une étoile
+function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
+    let rot = Math.PI / 2 * 3;
+    let x = cx;
+    let y = cy;
+    const step = Math.PI / spikes;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - outerRadius);
+    for (let i = 0; i < spikes; i++) {
+        x = cx + Math.cos(rot) * outerRadius;
+        y = cy + Math.sin(rot) * outerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+
+        x = cx + Math.cos(rot) * innerRadius;
+        y = cy + Math.sin(rot) * innerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+    }
+    ctx.lineTo(cx, cy - outerRadius);
+    ctx.closePath();
+    ctx.fill();
+}
+
+function spawnStar() {
+    const starX = Math.random() * (canvas.width - 20);
+    const starY = Math.random() * (canvas.height - 20);
+
+    const isColliding = obstacles.some(obstacle =>
+        checkCollision({ x: starX, y: starY, width: 20, height: 20 }, obstacle)
+    );
+
+    if (!isColliding) {
+        stars.push({ x: starX, y: starY });
+    }
+}
+
+// Appeler cette fonction toutes les 10 secondes
+setInterval(spawnStar, 10000);
+
+function checkStarPickup(player) {
+    stars = stars.filter(star => {
+        if (checkCollision(player, { x: star.x, y: star.y, width: 20, height: 20 })) {
+            shootStarBullets(player);
+            return false; // Supprime l'étoile après ramassage
+        }
+        return true;
+    });
+}
+function shootStarBullets(player) {
+    const directions = ['up', 'down', 'left', 'right', 'upleft', 'upright', 'downleft', 'downright'];
+    directions.forEach(direction => {
+        bullets.push({
+            x: player.x + player.width / 2,
+            y: player.y + player.height / 2,
+            direction: direction,
+            owner: player === player1 ? 'player1' : 'player2'
+        });
+    });
+}
+
+
 // Boucle principale du jeu
 function gameLoop() {
     if (gameOver) {
@@ -373,6 +439,10 @@ function gameLoop() {
     drawAmmoDrops();
     movePlayers();
     moveBullets();
+    drawStars();
+    checkStarPickup(player1);
+    checkStarPickup(player2);
+
     checkBulletCollisions();
 
     bullets.forEach(bullet => {
