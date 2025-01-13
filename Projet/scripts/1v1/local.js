@@ -34,7 +34,7 @@ function generateRandomObstacles(count) {
 }
 
 // Timer
-let timeRemaining = 25;
+let timeRemaining = 60;
 let gameOver = false;
 
 // Dessin des joueurs
