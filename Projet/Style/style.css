@@ -179,3 +179,59 @@ canvas {
 .ammo.player-red {
     color: #ff0000;
 }
+/* Buttons */
+button {
+    font-size: 1.2em;
+    color: #fff;
+    background-color: #ffcc00;
+    border: 2px solid #ffcc00;
+    border-radius: 5px;
+    padding: 15px 30px;
+    margin: 20px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+button:hover {
+    background-color: #ff9900;
+    transform: scale(1.05);
+}
+
+button:active {
+    background-color: #cc7a00;
+    transform: scale(1);
+}
+
+/* Form */
+.form-container {
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    font-size: 1em;
+    width: 100%;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 2px solid #ccc;
+    background-color: #222;
+    color: #fff;
+    transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+    border-color: #ffcc00;
+    outline: none;
+}
+
+/* Status & Error Messages */
+#status {
+    font-size: 1.2em;
+    color: #ffcc00;
+    margin-top: 20px;
+}
+
+.error {
+    color: #ff0000;
+}
