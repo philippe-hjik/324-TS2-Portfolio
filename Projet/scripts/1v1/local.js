@@ -2,8 +2,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Variables du jeu
-let player1 = { x: 50, y: 250, width: 30, height: 30, color: 'green', score: 0, ammo: 15, lastKey: 'right', weaponOffset: { x: 35, y: 12 } };
-let player2 = { x: 730, y: 250, width: 30, height: 30, color: 'brown', score: 0, ammo: 15, lastKey: 'left', weaponOffset: { x: -5, y: 12 } };
+let player1 = { x: 50, y: 250, width: 30, height: 30, color: 'green', score: 0, ammo: 15, lastKey: 'right', weaponOffset: { x: 35, y: 12 }, hasBonus: false };
+let player2 = { x: 730, y: 250, width: 30, height: 30, color: 'brown', score: 0, ammo: 15, lastKey: 'left', weaponOffset: { x: -5, y: 12 }, hasBonus: false };
 let bullets = [];
 let ammoDrops = [];
 const bulletSpeed = 15;
@@ -312,19 +312,7 @@ function movePlayers() {
     checkAmmoPickup(player2);
 }
 
-// Fonction pour tirer des balles
-function shootBullet(player) {
-    if (player.ammo > 0) {
-        bullets.push({
-            x: player.x + player.width / 2,
-            y: player.y + player.height / 2,
-            direction: player.lastKey,
-            owner: player === player1 ? 'player1' : 'player2'
-        });
-        player.ammo--;
-        updateAmmoDisplay();
-    }
-}
+
 
 // Fonction pour recharger la page
 function reloadPage() {
@@ -382,23 +370,42 @@ setInterval(spawnStar, 10000);
 function checkStarPickup(player) {
     stars = stars.filter(star => {
         if (checkCollision(player, { x: star.x, y: star.y, width: 20, height: 20 })) {
-            shootStarBullets(player);
-            return false; // Supprime l'étoile après ramassage
+            player.hasBonus = true; // Le joueur ramasse l'étoile
+            return false; // Supprime l'étoile
         }
         return true;
     });
 }
-function shootStarBullets(player) {
-    const directions = ['up', 'down', 'left', 'right', 'upleft', 'upright', 'downleft', 'downright'];
-    directions.forEach(direction => {
-        bullets.push({
-            x: player.x + player.width / 2,
-            y: player.y + player.height / 2,
-            direction: direction,
-            owner: player === player1 ? 'player1' : 'player2'
-        });
-    });
+
+function shootBullet(player) {
+    if (player.ammo > 0) {
+        if (player.hasBonus) {
+            // Tirer dans toutes les directions
+            const directions = ['up', 'down', 'left', 'right', 'upleft', 'upright', 'downleft', 'downright'];
+            directions.forEach(direction => {
+                bullets.push({
+                    x: player.x + player.width / 2,
+                    y: player.y + player.height / 2,
+                    direction: direction,
+                    owner: player === player1 ? 'player1' : 'player2'
+                });
+            });
+            player.hasBonus = false; // Consommer le bonus
+        } else {
+            // Tirer une balle normale
+            bullets.push({
+                x: player.x + player.width / 2,
+                y: player.y + player.height / 2,
+                direction: player.lastKey,
+                owner: player === player1 ? 'player1' : 'player2'
+            });
+        }
+        player.ammo--; // Réduire les munitions
+        updateAmmoDisplay();
+    }
 }
+
+
 
 
 // Boucle principale du jeu
@@ -442,6 +449,7 @@ function gameLoop() {
     drawStars();
     checkStarPickup(player1);
     checkStarPickup(player2);
+    
 
     checkBulletCollisions();
 
